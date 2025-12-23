@@ -1,26 +1,30 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Galaxias - Space Exploration</title>
     <meta name="description" content="Explore the cosmos with Galaxias - An interactive space simulation experience">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Lust:wght@400;700;900&display=swap" rel="stylesheet"></head>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Shabo:wght@400;700;900&family=Korvich:wght@400;700&display=swap"
+        rel="stylesheet">
+</head>
+
 <body>
     <div class="starfield" id="starfield"></div>
-    
     <div class="container">
         <div class="title-container">
             <div class="title-glow"></div>
             <h1 class="title">Galaxias</h1>
+            <p class="tagline">Explore the vast space of Space</p>
         </div>
-        
         <button class="go-button" id="goButton">GO</button>
     </div>
-
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 </body>
+
 </html>
