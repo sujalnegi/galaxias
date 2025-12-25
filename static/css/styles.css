@@ -16,29 +16,135 @@ body {
     left: 0;
     width: 100%;
     height: 100%;
-    background: radial-gradient(ellipse at bottom, #0B1026 0%, #050814 100%);
+    background: #000;
     overflow: hidden;
     z-index: 0;
+    animation: slowZoom 20s ease-in-out infinite;
 }
+
+
 
 .star {
     position: absolute;
-    width: 2px;
-    height: 2px;
     background: white;
     border-radius: 50%;
     animation: twinkle 3s infinite;
 }
 
-@keyframes twinkle {
+.star.tiny {
+    width: 0.5px;
+    height: 0.5px;
+}
 
-    0%,
+.star.extra-small {
+    width: 1px;
+    height: 1px;
+}
+
+.star.small {
+    width: 1.5px;
+    height: 1.5px;
+}
+
+.star.medium {
+    width: 2px;
+    height: 2px;
+    box-shadow: 0 0 2px rgba(255, 255, 255, 0.8);
+}
+
+.star.large {
+    width: 3px;
+    height: 3px;
+    box-shadow: 0 0 4px rgba(255, 255, 255, 0.9);
+}
+
+.star.extra-large {
+    width: 4px;
+    height: 4px;
+    box-shadow: 0 0 6px rgba(255, 255, 255, 1);
+}
+
+.star.blue-tint {
+    background: rgba(173, 216, 255, 0.95);
+    box-shadow: 0 0 3px rgba(173, 216, 255, 0.6);
+}
+
+.star.gold-tint {
+    background: rgba(255, 240, 200, 0.95);
+    box-shadow: 0 0 3px rgba(255, 240, 200, 0.6);
+}
+
+.star.red-tint {
+    background: rgba(255, 180, 180, 0.9);
+    box-shadow: 0 0 3px rgba(255, 180, 180, 0.5);
+}
+
+.star.green-tint {
+    background: rgba(200, 255, 220, 0.85);
+    box-shadow: 0 0 3px rgba(200, 255, 220, 0.5);
+}
+
+.star.orange-tint {
+    background: rgba(255, 200, 150, 0.9);
+    box-shadow: 0 0 3px rgba(255, 200, 150, 0.6);
+}
+
+.star.white-bright {
+    background: rgba(255, 255, 255, 1);
+    box-shadow: 0 0 4px rgba(255, 255, 255, 0.8);
+}
+
+@keyframes slowZoom {
+    0% {
+        transform: scale(1);
+    }
+
     100% {
-        opacity: 0.3;
+        transform: scale(1.3);
+    }
+}
+
+@keyframes twinkle {
+    0% {
+        opacity: 0.2;
+        transform: scale(1);
+    }
+
+    25% {
+        opacity: 0.5;
     }
 
     50% {
         opacity: 1;
+        transform: scale(1.2);
+    }
+
+    75% {
+        opacity: 0.6;
+    }
+
+    100% {
+        opacity: 0.2;
+        transform: scale(1);
+    }
+}
+
+@keyframes shine {
+
+    0%,
+    90% {
+        opacity: 0.3;
+        filter: brightness(1);
+    }
+
+    95% {
+        opacity: 1;
+        filter: brightness(2);
+    }
+
+    100% {
+        opacity: 0.3;
+        filter: brightness(1);
     }
 }
 
@@ -51,6 +157,7 @@ body {
     align-items: center;
     height: 100vh;
     width: 100vw;
+    perspective: 1000px;
 }
 
 .title-container {
@@ -110,32 +217,7 @@ body {
     }
 }
 
-.title-glow {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 120%;
-    height: 120%;
-    background: radial-gradient(circle, rgba(255, 159, 67, 0.3) 0%, rgba(255, 127, 67, 0.2) 30%, transparent 70%);
-    filter: blur(40px);
-    animation: pulse 4s ease-in-out infinite;
-    z-index: -1;
-}
 
-@keyframes pulse {
-
-    0%,
-    100% {
-        transform: translate(-50%, -50%) scale(1);
-        opacity: 0.5;
-    }
-
-    50% {
-        transform: translate(-50%, -50%) scale(1.1);
-        opacity: 0.8;
-    }
-}
 
 .go-button {
     position: relative;
@@ -152,7 +234,6 @@ body {
     cursor: pointer;
     overflow: hidden;
     transition: all 0.3s ease;
-    box-shadow: 0 0 20px rgba(255, 159, 67, 0.5), 0 0 40px rgba(255, 127, 67, 0.3), inset 0 0 20px rgba(255, 255, 255, 0.1);
 }
 
 .go-button::before {
@@ -172,18 +253,74 @@ body {
 
 .go-button:hover {
     transform: translateY(-5px) scale(1.05);
-    box-shadow: 0 10px 40px rgba(255, 159, 67, 0.6), 0 0 60px rgba(255, 127, 67, 0.4), inset 0 0 30px rgba(255, 255, 255, 0.2);
 }
 
 .go-button:active {
     transform: translateY(-2px) scale(1.02);
 }
 
+.arch-scroll-container {
+    position: relative;
+    width: 100%;
+    max-width: 900px;
+    height: 60px;
+    margin: 40px 0;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+}
+
+.arch-scroll-content {
+    display: flex;
+    white-space: nowrap;
+    animation: scrollText 25s linear infinite;
+    gap: 20px;
+    transform: perspective(800px) rotateX(12deg);
+    transform-style: preserve-3d;
+}
+
+.arch-scroll-content span {
+    display: inline-block;
+    padding: 12px 30px;
+    background: rgba(255, 255, 255, 0.95);
+    color: #000;
+    font-family: 'Korvich', 'Lust', 'Segoe UI', sans-serif;
+    font-size: 1rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(255, 255, 255, 0.2);
+    margin-right: 20px;
+}
+
+@keyframes scrollText {
+    0% {
+        transform: perspective(800px) rotateX(12deg) translateX(0) translateY(-20px);
+    }
+
+    25% {
+        transform: perspective(800px) rotateX(12deg) translateX(-12.5%) translateY(0px);
+    }
+
+    50% {
+        transform: perspective(800px) rotateX(12deg) translateX(-25%) translateY(10px);
+    }
+
+    75% {
+        transform: perspective(800px) rotateX(12deg) translateX(-37.5%) translateY(0px);
+    }
+
+    100% {
+        transform: perspective(800px) rotateX(12deg) translateX(-50%) translateY(-20px);
+    }
+}
+
 .particle {
     position: absolute;
     width: 4px;
     height: 4px;
-    background: radial-gradient(circle, #B47CFF, transparent);
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.9), transparent);
     border-radius: 50%;
     pointer-events: none;
     animation: float 6s infinite ease-in-out;
@@ -191,9 +328,8 @@ body {
 
 @keyframes float {
 
-    0%,
-    100% {
-        transform: translateY(0) translateX(0);
+    0% {
+        transform: scale(0.1);
         opacity: 0;
     }
 
@@ -206,7 +342,7 @@ body {
     }
 
     100% {
-        transform: translateY(-100vh) translateX(50px);
+        transform: scale(2.5);
         opacity: 0;
     }
 }
@@ -248,3 +384,10 @@ body {
         opacity: 0;
     }
 }
+
+/*  
+
+svg milli bhi to eesi premium 
+aaj hi to change kiya hai 
+
+*/

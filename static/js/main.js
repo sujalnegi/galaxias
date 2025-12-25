@@ -1,13 +1,34 @@
 function createStarfield() {
     const starfield = document.getElementById('starfield');
-    const numberOfStars = 200;
+    const numberOfStars = 300;
+    const sizes = ['tiny', 'tiny', 'tiny', 'extra-small', 'extra-small', 'extra-small', 'small', 'small', 'medium', 'large', 'extra-large'];
+    const tints = [
+        '', '', '', '', '', '',
+        'white-bright', 'white-bright', 'white-bright',
+        'blue-tint', 'blue-tint',
+        'gold-tint', 'gold-tint',
+        'orange-tint',
+        'red-tint',
+        'green-tint'
+    ];
     for (let i = 0; i < numberOfStars; i++) {
         const star = document.createElement('div');
         star.className = 'star';
+        const size = sizes[Math.floor(Math.random() * sizes.length)];
+        const tint = tints[Math.floor(Math.random() * tints.length)];
+        star.classList.add(size);
+        if (tint) star.classList.add(tint);
         star.style.left = `${Math.random() * 100}%`;
         star.style.top = `${Math.random() * 100}%`;
         star.style.animationDelay = `${Math.random() * 3}s`;
         star.style.animationDuration = `${2 + Math.random() * 3}s`;
+        if (Math.random() > 0.85) {
+            star.style.animation = `shine ${5 + Math.random() * 10}s infinite`;
+            star.style.animationDelay = `${Math.random() * 5}s`;
+        }
+        if (Math.random() > 0.7) {
+            star.style.filter = `blur(${Math.random() * 0.5}px)`;
+        }
         starfield.appendChild(star);
     }
 }
