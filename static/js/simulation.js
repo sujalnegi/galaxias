@@ -1,6 +1,8 @@
 let scene, camera, renderer, controls;
-let sun, mercury;
+let sun, mercury, venus;
 let mercuryOrbitAngle = 0;
+let venusOrbitAngle = 0;
+let isPaused = false;
 
 function init() {
     const container = document.getElementById('canvas-container');
@@ -50,6 +52,7 @@ function init() {
     if (typeof THREE.GLTFLoader !== 'undefined') {
         loadSunModel();
         loadMercuryModel();
+        loadVenusModel();
     } else {
         console.warn('GLTFLoader not available, using fallback sun');
     }
@@ -69,7 +72,20 @@ function init() {
         camera.position.add(direction.multiplyScalar(500));
     });
 
+    window.addEventListener('keydown', (e) => {
+        if (e.code === 'Space') {
+            e.preventDefault();
+            togglePlayPause();
+        }
+    });
+
     animate();
+}
+
+function togglePlayPause() {
+    isPaused = !isPaused;
+    const playPauseBtn = document.getElementById('playPauseBtn');
+    playPauseBtn.textContent = isPaused ? '▶' : '||';
 }
 
 function createInfiniteGrid() {
@@ -107,22 +123,18 @@ function createInfiniteGrid() {
         }
     }
 
-    console.log('✅ Infinite grid created with numbered labels');
+
 }
 
 function loadSunModel() {
     const loader = new THREE.GLTFLoader();
 
-    console.log('🌟 Attempting to load sun.glb...');
-
     loader.load(
         '/static/assets/sun.glb',
         function (gltf) {
-            console.log('✅ GLB file loaded successfully!');
 
             if (sun) {
                 scene.remove(sun);
-                console.log('Removed fallback sun');
             }
 
             sun = gltf.scene;
@@ -132,7 +144,6 @@ function loadSunModel() {
 
             sun.traverse((child) => {
                 if (child.isMesh) {
-                    console.log('Found mesh:', child.name);
                     if (child.material) {
                         child.material.emissive = new THREE.Color(0xFDB813);
                         child.material.emissiveIntensity = 2;
@@ -142,21 +153,16 @@ function loadSunModel() {
                 }
             });
 
-            const box = new THREE.Box3().setFromObject(sun);
-            const size = box.getSize(new THREE.Vector3());
-            console.log('📏 Model size:', size);
-            console.log('📍 Model position:', sun.position);
+
 
             scene.add(sun);
-            console.log('✅ Sun GLB model added to scene at center (0,0,0)');
+
         },
         function (xhr) {
-            const percentComplete = (xhr.loaded / xhr.total * 100);
-            console.log('⏳ Loading: ' + percentComplete.toFixed(2) + '%');
+
         },
         function (error) {
-            console.error('❌ Error loading sun model:', error);
-            console.log('Using fallback sun sphere');
+            console.error('');
         }
     );
 }
@@ -165,12 +171,11 @@ function loadMercuryModel() {
     const loader = new THREE.GLTFLoader();
     const mercuryOrbitRadius = 1500;
 
-    console.log('🪐 Attempting to load mercury.glb...');
+
 
     loader.load(
         '/static/assets/mercury.glb',
         function (gltf) {
-            console.log('✅ Mercury GLTF loaded successfully!');
 
             mercury = gltf.scene;
 
@@ -179,21 +184,56 @@ function loadMercuryModel() {
 
             mercury.traverse((child) => {
                 if (child.isMesh) {
-                    console.log('Found Mercury mesh:', child.name);
                 }
             });
 
             scene.add(mercury);
-            console.log('✅ Mercury added to scene');
+
 
             createOrbitLine(mercuryOrbitRadius, 0x8C7853);
         },
         function (xhr) {
-            const percentComplete = (xhr.loaded / xhr.total * 100);
-            console.log('⏳ Loading Mercury: ' + percentComplete.toFixed(2) + '%');
+
         },
         function (error) {
-            console.error('❌ Error loading Mercury model:', error);
+            console.error('');
+        }
+    );
+}
+
+function loadVenusModel() {
+    const loader = new THREE.GLTFLoader();
+    const venusOrbitRadius = 2300;
+
+    console.log('🪐 Attempting to load venus.glb...');
+
+    loader.load(
+        '/static/assets/venus.glb',
+        function (gltf) {
+
+            venus = gltf.scene;
+
+            venus.scale.set(2.0, 2.0, 2.0);
+            venus.position.set(venusOrbitRadius, 0, 0);
+
+            venus.traverse((child) => {
+                if (child.isMesh) {
+                }
+            });
+
+
+
+
+            scene.add(venus);
+
+
+            createOrbitLine(venusOrbitRadius, 0xFFC649);
+        },
+        function (xhr) {
+
+        },
+        function (error) {
+            console.error('');
         }
     );
 }
@@ -249,25 +289,19 @@ function createFallbackSun() {
     );
     sun.add(sunGlow);
 
-    console.log('✅ Fallback sun sphere created at (0,0,0) with radius 80');
-    console.log('Camera is at:', camera.position);
 }
-
 function onWindowResize() {
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
     renderer.setSize(window.innerWidth, window.innerHeight);
 }
-
 function animate() {
     requestAnimationFrame(animate);
 
     controls.update();
-
     if (sun) {
         sun.rotation.y += 0.003;
     }
-
     if (mercury) {
         mercuryOrbitAngle += 0.01;
         const mercuryOrbitRadius = 1500;
@@ -275,8 +309,26 @@ function animate() {
         mercury.position.z = Math.sin(mercuryOrbitAngle) * mercuryOrbitRadius;
         mercury.rotation.y += 0.005;
     }
+    if (venus) {
+        venusOrbitAngle += 0.007;
+        const venusOrbitRadius = 2300;
+        venus.position.x = Math.cos(venusOrbitAngle) * venusOrbitRadius;
+        venus.position.z = Math.sin(venusOrbitAngle) * venusOrbitRadius;
+        venus.rotation.y += 0.003;
+    }
 
     renderer.render(scene, camera);
 }
-
 document.addEventListener('DOMContentLoaded', init);
+
+/*
+tap of tiffany 
+vickey eventually i did it 
+just injected drugs 
+audience out sorce of this it works not very hard  
+vecna he was here  after school i thi libraryi used to live in this house memory to memory he shuffles bingo caught  henry holly  selfish u beein 
+i m done  alot of books are here it does take time to log 
+
+
+
+*/ 
