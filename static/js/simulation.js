@@ -14,7 +14,7 @@ function init() {
         0.1,
         1000000
     );
-    camera.position.set(0, 100, 400);
+    camera.position.set(10000, 10000, 10000);
     camera.lookAt(0, 0, 0);
 
     renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -43,6 +43,8 @@ function init() {
     directionalLight.position.set(0, 50, 50);
     scene.add(directionalLight);
 
+    createInfiniteGrid();
+
     createFallbackSun();
 
     if (typeof THREE.GLTFLoader !== 'undefined') {
@@ -54,7 +56,58 @@ function init() {
 
     window.addEventListener('resize', onWindowResize);
 
+    const zoomInBtn = document.getElementById('zoomInBtn');
+    const zoomOutBtn = document.getElementById('zoomOutBtn');
+
+    zoomInBtn.addEventListener('click', () => {
+        const direction = camera.position.clone().normalize();
+        camera.position.sub(direction.multiplyScalar(500));
+    });
+
+    zoomOutBtn.addEventListener('click', () => {
+        const direction = camera.position.clone().normalize();
+        camera.position.add(direction.multiplyScalar(500));
+    });
+
     animate();
+}
+
+function createInfiniteGrid() {
+    const gridSize = 10000;
+    const gridDivisions = 100;
+    const gridStep = gridSize / gridDivisions;
+
+    const gridHelper = new THREE.GridHelper(gridSize * 2, gridDivisions * 2, 0x444444, 0x222222);
+    gridHelper.position.y = 0;
+    scene.add(gridHelper);
+
+    const loader = new THREE.FontLoader();
+    const canvas = document.createElement('canvas');
+    const context = canvas.getContext('2d');
+    canvas.width = 256;
+    canvas.height = 128;
+
+    for (let x = -gridSize; x <= gridSize; x += gridStep * 10) {
+        for (let z = -gridSize; z <= gridSize; z += gridStep * 10) {
+            if (x === 0 && z === 0) continue;
+
+            context.clearRect(0, 0, canvas.width, canvas.height);
+            context.fillStyle = 'white';
+            context.font = 'Bold 48px Arial';
+            context.textAlign = 'center';
+            context.textBaseline = 'middle';
+            context.fillText(`${x},${z}`, canvas.width / 2, canvas.height / 2);
+
+            const texture = new THREE.CanvasTexture(canvas);
+            const spriteMaterial = new THREE.SpriteMaterial({ map: texture, transparent: true });
+            const sprite = new THREE.Sprite(spriteMaterial);
+            sprite.position.set(x, 5, z);
+            sprite.scale.set(50, 25, 1);
+            scene.add(sprite);
+        }
+    }
+
+    console.log('✅ Infinite grid created with numbered labels');
 }
 
 function loadSunModel() {
@@ -110,18 +163,18 @@ function loadSunModel() {
 
 function loadMercuryModel() {
     const loader = new THREE.GLTFLoader();
-    const mercuryOrbitRadius = 150;
+    const mercuryOrbitRadius = 1500;
 
-    console.log('🪐 Attempting to load mercury.gltf...');
+    console.log('🪐 Attempting to load mercury.glb...');
 
     loader.load(
-        '/static/assets/mercury.gltf',
+        '/static/assets/mercury.glb',
         function (gltf) {
             console.log('✅ Mercury GLTF loaded successfully!');
 
             mercury = gltf.scene;
 
-            mercury.scale.set(5, 5, 5);
+            mercury.scale.set(0.05, 0.05, 0.05);
             mercury.position.set(mercuryOrbitRadius, 0, 0);
 
             mercury.traverse((child) => {
@@ -217,7 +270,7 @@ function animate() {
 
     if (mercury) {
         mercuryOrbitAngle += 0.01;
-        const mercuryOrbitRadius = 150;
+        const mercuryOrbitRadius = 1500;
         mercury.position.x = Math.cos(mercuryOrbitAngle) * mercuryOrbitRadius;
         mercury.position.z = Math.sin(mercuryOrbitAngle) * mercuryOrbitRadius;
         mercury.rotation.y += 0.005;
