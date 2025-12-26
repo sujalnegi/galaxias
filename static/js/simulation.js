@@ -1,10 +1,13 @@
 let scene, camera, renderer, controls;
-let sun, mercury, venus, earth;
+let sun, mercury, venus, earth, mars, jupiter;
 let mercuryOrbitAngle = 0;
 let venusOrbitAngle = 0;
 let earthOrbitAngle = 0;
+let marsOrbitAngle = 0;
+let jupiterOrbitAngle = 0;
 let isPaused = false;
 let grid = null;
+let planetSizeMultiplier = 1.0;
 function init() {
     const container = document.getElementById('canvas-container');
     scene = new THREE.Scene();
@@ -45,6 +48,8 @@ function init() {
         loadMercuryModel();
         loadVenusModel();
         loadEarthModel();
+        loadMarsModel();
+        loadJupiterModel();
     } else {
         console.warn('GLTFLoader not available, using fallback sun');
     }
@@ -53,8 +58,21 @@ function init() {
     const gridToggleBtn = document.getElementById('gridToggleBtn');
     const zoomInBtn = document.getElementById('zoomInBtn');
     const zoomOutBtn = document.getElementById('zoomOutBtn');
+    const planetSizeIncreaseBtn = document.getElementById('planetSizeIncreaseBtn');
+    const planetSizeDecreaseBtn = document.getElementById('planetSizeDecreaseBtn');
+
     playPauseBtn.addEventListener('click', togglePlayPause);
     gridToggleBtn.addEventListener('click', toggleGrid);
+
+    planetSizeIncreaseBtn.addEventListener('click', () => {
+        planetSizeMultiplier *= 1.2;
+        updatePlanetSizes();
+    });
+
+    planetSizeDecreaseBtn.addEventListener('click', () => {
+        planetSizeMultiplier *= 0.8;
+        updatePlanetSizes();
+    });
     zoomInBtn.addEventListener('click', () => {
         const direction = camera.position.clone().normalize();
         camera.position.sub(direction.multiplyScalar(500));
@@ -72,6 +90,22 @@ function init() {
             e.preventDefault();
             toggleGrid();
         }
+        if (e.code === 'ArrowUp') {
+            e.preventDefault();
+            camera.position.y += 100;
+        }
+        if (e.code === 'ArrowDown') {
+            e.preventDefault();
+            camera.position.y -= 100;
+        }
+        if (e.code === 'ArrowLeft') {
+            e.preventDefault();
+            camera.position.x -= 100;
+        }
+        if (e.code === 'ArrowRight') {
+            e.preventDefault();
+            camera.position.x += 100;
+        }
     });
     animate();
 }
@@ -87,6 +121,23 @@ function toggleGrid() {
         gridToggleBtn.textContent = grid.visible ? '⊞' : '⊡';
     }
 }
+
+function updatePlanetSizes() {
+    const baseScales = {
+        mercury: 0.01,
+        venus: 5.0,
+        earth: 5.0,
+        mars: 2.5,
+        jupiter: 0.25
+    };
+
+    if (mercury) mercury.scale.setScalar(baseScales.mercury * planetSizeMultiplier);
+    if (venus) venus.scale.setScalar(baseScales.venus * planetSizeMultiplier);
+    if (earth) earth.scale.setScalar(baseScales.earth * planetSizeMultiplier);
+    if (mars) mars.scale.setScalar(baseScales.mars * planetSizeMultiplier);
+    if (jupiter) jupiter.scale.setScalar(baseScales.jupiter * planetSizeMultiplier);
+}
+
 function createInfiniteGrid() {
     const gridSize = 10000;
     const gridDivisions = 100;
@@ -225,6 +276,52 @@ function loadEarthModel() {
         }
     );
 }
+function loadMarsModel() {
+    const loader = new THREE.GLTFLoader();
+    const marsOrbitRadius = 4500;
+    loader.load(
+        '/static/assets/mars.glb',
+        function (gltf) {
+            mars = gltf.scene;
+            mars.scale.set(2.5, 2.5, 2.5);
+            mars.position.set(marsOrbitRadius, 0, 0);
+            mars.traverse((child) => {
+                if (child.isMesh) {
+                }
+            });
+            scene.add(mars);
+            createOrbitLine(marsOrbitRadius, 0xCD5C5C);
+        },
+        function (xhr) {
+        },
+        function (error) {
+            console.error('');
+        }
+    );
+}
+function loadJupiterModel() {
+    const loader = new THREE.GLTFLoader();
+    const jupiterOrbitRadius = 7000;
+    loader.load(
+        '/static/assets/jupiter.glb',
+        function (gltf) {
+            jupiter = gltf.scene;
+            jupiter.scale.set(0.25, 0.25, 0.25);
+            jupiter.position.set(jupiterOrbitRadius, 0, 0);
+            jupiter.traverse((child) => {
+                if (child.isMesh) {
+                }
+            });
+            scene.add(jupiter);
+            createOrbitLine(jupiterOrbitRadius, 0xFFA500);
+        },
+        function (xhr) {
+        },
+        function (error) {
+            console.error('');
+        }
+    );
+}
 function createOrbitLine(radius, color) {
     const orbitGeometry = new THREE.BufferGeometry();
     const orbitPoints = [];
@@ -302,6 +399,20 @@ function animate() {
             earth.position.x = Math.cos(earthOrbitAngle) * earthOrbitRadius;
             earth.position.z = Math.sin(earthOrbitAngle) * earthOrbitRadius;
             earth.rotation.y += 0.01;
+        }
+        if (mars) {
+            marsOrbitAngle += 0.003;
+            const marsOrbitRadius = 4500;
+            mars.position.x = Math.cos(marsOrbitAngle) * marsOrbitRadius;
+            mars.position.z = Math.sin(marsOrbitAngle) * marsOrbitRadius;
+            mars.rotation.y += 0.008;
+        }
+        if (jupiter) {
+            jupiterOrbitAngle += 0.002;
+            const jupiterOrbitRadius = 7000;
+            jupiter.position.x = Math.cos(jupiterOrbitAngle) * jupiterOrbitRadius;
+            jupiter.position.z = Math.sin(jupiterOrbitAngle) * jupiterOrbitRadius;
+            jupiter.rotation.y += 0.015;
         }
     }
     renderer.render(scene, camera);
