@@ -227,7 +227,3 @@ function animate() {
 }
 
 document.addEventListener('DOMContentLoaded', init);
-
-/*
-i have added mercury.gltf  in the assests you add it to the simulation 
-*/ 
