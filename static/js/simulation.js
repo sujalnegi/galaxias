@@ -1,5 +1,6 @@
 let scene, camera, renderer, controls;
-let sun;
+let sun, mercury;
+let mercuryOrbitAngle = 0;
 
 function init() {
     const container = document.getElementById('canvas-container');
@@ -11,9 +12,9 @@ function init() {
         75,
         window.innerWidth / window.innerHeight,
         0.1,
-        10000
+        1000000
     );
-    camera.position.set(0, 50, 200);
+    camera.position.set(0, 100, 400);
     camera.lookAt(0, 0, 0);
 
     renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -46,6 +47,7 @@ function init() {
 
     if (typeof THREE.GLTFLoader !== 'undefined') {
         loadSunModel();
+        loadMercuryModel();
     } else {
         console.warn('GLTFLoader not available, using fallback sun');
     }
@@ -92,9 +94,6 @@ function loadSunModel() {
             console.log('📏 Model size:', size);
             console.log('📍 Model position:', sun.position);
 
-            const boxHelper = new THREE.BoxHelper(sun, 0xff0000);
-            scene.add(boxHelper);
-
             scene.add(sun);
             console.log('✅ Sun GLB model added to scene at center (0,0,0)');
         },
@@ -107,6 +106,70 @@ function loadSunModel() {
             console.log('Using fallback sun sphere');
         }
     );
+}
+
+function loadMercuryModel() {
+    const loader = new THREE.GLTFLoader();
+    const mercuryOrbitRadius = 150;
+
+    console.log('🪐 Attempting to load mercury.gltf...');
+
+    loader.load(
+        '/static/assets/mercury.gltf',
+        function (gltf) {
+            console.log('✅ Mercury GLTF loaded successfully!');
+
+            mercury = gltf.scene;
+
+            mercury.scale.set(5, 5, 5);
+            mercury.position.set(mercuryOrbitRadius, 0, 0);
+
+            mercury.traverse((child) => {
+                if (child.isMesh) {
+                    console.log('Found Mercury mesh:', child.name);
+                }
+            });
+
+            scene.add(mercury);
+            console.log('✅ Mercury added to scene');
+
+            createOrbitLine(mercuryOrbitRadius, 0x8C7853);
+        },
+        function (xhr) {
+            const percentComplete = (xhr.loaded / xhr.total * 100);
+            console.log('⏳ Loading Mercury: ' + percentComplete.toFixed(2) + '%');
+        },
+        function (error) {
+            console.error('❌ Error loading Mercury model:', error);
+        }
+    );
+}
+
+function createOrbitLine(radius, color) {
+    const orbitGeometry = new THREE.BufferGeometry();
+    const orbitPoints = [];
+
+    for (let i = 0; i <= 64; i++) {
+        const angle = (i / 64) * Math.PI * 2;
+        orbitPoints.push(
+            new THREE.Vector3(
+                Math.cos(angle) * radius,
+                0,
+                Math.sin(angle) * radius
+            )
+        );
+    }
+
+    orbitGeometry.setFromPoints(orbitPoints);
+
+    const orbitMaterial = new THREE.LineBasicMaterial({
+        color: color,
+        transparent: true,
+        opacity: 0.3
+    });
+
+    const orbit = new THREE.Line(orbitGeometry, orbitMaterial);
+    scene.add(orbit);
 }
 
 function createFallbackSun() {
@@ -152,7 +215,19 @@ function animate() {
         sun.rotation.y += 0.003;
     }
 
+    if (mercury) {
+        mercuryOrbitAngle += 0.01;
+        const mercuryOrbitRadius = 150;
+        mercury.position.x = Math.cos(mercuryOrbitAngle) * mercuryOrbitRadius;
+        mercury.position.z = Math.sin(mercuryOrbitAngle) * mercuryOrbitRadius;
+        mercury.rotation.y += 0.005;
+    }
+
     renderer.render(scene, camera);
 }
 
 document.addEventListener('DOMContentLoaded', init);
+
+/*
+i have added mercury.gltf  in the assests you add it to the simulation 
+*/ 

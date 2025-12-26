@@ -19,7 +19,7 @@ body {
     background: #000;
     overflow: hidden;
     z-index: 0;
-    animation: slowZoom 20s ease-in-out infinite;
+    animation: slowZoom 20s ease-in-out infinite alternate;
 }
 
 
@@ -384,10 +384,3 @@ body {
         opacity: 0;
     }
 }
-
-/*  
-
-svg milli bhi to eesi premium 
-aaj hi to change kiya hai 
-
-*/

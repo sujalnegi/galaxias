@@ -22,7 +22,7 @@ function createStarfield() {
         star.style.top = `${Math.random() * 100}%`;
         star.style.animationDelay = `${Math.random() * 3}s`;
         star.style.animationDuration = `${2 + Math.random() * 3}s`;
-        if (Math.random() > 0.85) {
+        if (Math.random() > 0.5) {
             star.style.animation = `shine ${5 + Math.random() * 10}s infinite`;
             star.style.animationDelay = `${Math.random() * 5}s`;
         }
