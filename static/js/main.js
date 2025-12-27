@@ -75,4 +75,67 @@ document.addEventListener('DOMContentLoaded', () => {
     createShootingStars();
     createParticles();
     setupGoButton();
+    create3DStars();
 });
+function create3DStars() {
+    const container = document.getElementById('stars-canvas');
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    camera.position.z = 5;
+    const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(window.devicePixelRatio);
+    container.appendChild(renderer.domElement);
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
+    scene.add(ambientLight);
+    const pointLight = new THREE.PointLight(0xffffff, 1);
+    pointLight.position.set(5, 5, 5);
+    scene.add(pointLight);
+    let starsModel = null;
+    const loader = new THREE.GLTFLoader();
+    loader.load('/static/assets/stars.glb', function (gltf) {
+        starsModel = gltf.scene;
+        starsModel.scale.set(2, 2, 2);
+        starsModel.position.x = -3;
+        starsModel.position.y = -2.5;
+        starsModel.position.z = 8;
+        scene.add(starsModel);
+    }, undefined, function (error) {
+        console.error('Error loading stars model:', error);
+    });
+    let animationStartTime = null;
+    const PAUSE_DURATION = 1000;
+    const ACCELERATION_DURATION = 1000;
+    const TARGET_SPEED = 0.001;
+
+    function animate() {
+        requestAnimationFrame(animate);
+        if (starsModel) {
+            if (animationStartTime === null) {
+                animationStartTime = Date.now();
+            }
+            const elapsedTime = Date.now() - animationStartTime;
+
+            if (elapsedTime > PAUSE_DURATION && starsModel.position.z < 10) {
+                const animationTime = elapsedTime - PAUSE_DURATION;
+                let speed;
+
+                if (animationTime < ACCELERATION_DURATION) {
+                    const progress = animationTime / ACCELERATION_DURATION;
+                    speed = TARGET_SPEED * progress;
+                } else {
+                    speed = TARGET_SPEED;
+                }
+
+                starsModel.position.z += speed;
+            }
+        }
+        renderer.render(scene, camera);
+    }
+    animate();
+    window.addEventListener('resize', () => {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+}

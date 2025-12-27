@@ -158,16 +158,14 @@ function createStarfield() {
     const positions = new Float32Array(starCount * 3);
     const colors = new Float32Array(starCount * 3);
 
-    // Star color options: white, faint red, faint blue, faint green
     const starColors = [
-        { r: 1.0, g: 1.0, b: 1.0 },      // Shiny white (most common)
-        { r: 1.0, g: 0.3, b: 0.3 },      // Faint red
-        { r: 0.3, g: 0.5, b: 1.0 },      // Faint blue
-        { r: 0.3, g: 1.0, b: 0.5 }       // Faint green
+        { r: 1.0, g: 1.0, b: 1.0 },      
+        { r: 1.0, g: 0.3, b: 0.3 },      
+        { r: 0.3, g: 0.5, b: 1.0 },      
+        { r: 0.3, g: 1.0, b: 0.5 }       
     ];
 
     for (let i = 0; i < starCount; i++) {
-        // Random position in a large sphere around the scene
         const radius = 100000 + Math.random() * 50000;
         const theta = Math.random() * Math.PI * 2;
         const phi = Math.acos(2 * Math.random() - 1);
@@ -175,8 +173,6 @@ function createStarfield() {
         positions[i * 3] = radius * Math.sin(phi) * Math.cos(theta);
         positions[i * 3 + 1] = radius * Math.sin(phi) * Math.sin(theta);
         positions[i * 3 + 2] = radius * Math.cos(phi);
-
-        // Assign random color (80% white, 20% colored)
         const colorChoice = Math.random() < 0.8 ? starColors[0] : starColors[Math.floor(Math.random() * 4)];
         colors[i * 3] = colorChoice.r;
         colors[i * 3 + 1] = colorChoice.g;
@@ -410,13 +406,12 @@ function loadUranusModel() {
     const loader = new THREE.GLTFLoader();
     const uranusOrbitRadius = 58500;
 
-    console.log('🌐 Loading Uranus model...');
+    console.log('Loading Uranus model...');
 
     loader.load(
         '/static/assets/uranus.glb',
         function (gltf) {
-            console.log('🌐 Uranus GLB file loaded successfully!');
-
+            console.log('Uranus GLB file loaded successfully!');
             uranus = gltf.scene;
             uranus.scale.set(0.065, 0.065, 0.065);
             uranus.position.set(uranusOrbitRadius, 0, 0);
@@ -427,23 +422,20 @@ function loadUranusModel() {
                     child.receiveShadow = true;
                 }
             });
-
             scene.add(uranus);
-            console.log('✅ Uranus added to scene at position:', uranus.position);
-            console.log('✅ Uranus scale:', uranus.scale);
-
-            // Create orbit line
+            console.log('Uranus added to scene at position:', uranus.position);
+            console.log('Uranus scale:', uranus.scale);
             createOrbitLine(uranusOrbitRadius, 0x4FD8EB);
-            console.log('✅ Uranus orbit line created (cyan)');
+            console.log('Uranus orbit line created (cyan)');
         },
         function (xhr) {
             const percentComplete = (xhr.loaded / xhr.total) * 100;
-            console.log('🌐 Uranus loading: ' + Math.round(percentComplete) + '%');
+            console.log('Uranus loading: ' + Math.round(percentComplete) + '%');
         },
         function (error) {
-            console.error('❌ FAILED to load Uranus model!');
-            console.error('❌ Error details:', error);
-            console.error('❌ Check if file exists at: /static/assets/uranus.glb');
+            console.error('FAILED to load Uranus model!');
+            console.error('Error details:', error);
+            console.error('Check if file exists at: /static/assets/uranus.glb');
         }
     );
 }
@@ -468,23 +460,20 @@ function loadNeptuneModel() {
                     child.receiveShadow = true;
                 }
             });
-
             scene.add(neptune);
-            console.log('✅ Neptune added to scene at position:', neptune.position);
-            console.log('✅ Neptune scale:', neptune.scale);
-
-            // Create orbit line
+            console.log('Neptune added to scene at position:', neptune.position);
+            console.log('Neptune scale:', neptune.scale);
             createOrbitLine(neptuneOrbitRadius, 0x4169E1);
-            console.log('✅ Neptune orbit line created (deep blue)');
+            console.log('Neptune orbit line created (deep blue)');
         },
         function (xhr) {
             const percentComplete = (xhr.loaded / xhr.total) * 100;
-            console.log('🔵 Neptune loading: ' + Math.round(percentComplete) + '%');
+            console.log(' Neptune loading: ' + Math.round(percentComplete) + '%');
         },
         function (error) {
-            console.error('❌ FAILED to load Neptune model!');
-            console.error('❌ Error details:', error);
-            console.error('❌ Check if file exists at: /static/assets/neptune.glb');
+            console.error('FAILED to load Neptune model!');
+            console.error('Error details:', error);
+            console.error(' Check if file exists at: /static/assets/neptune.glb');
         }
     );
 }
@@ -512,7 +501,7 @@ function createOrbitLine(radius, color) {
     scene.add(orbit);
 }
 function createFallbackSun() {
-    console.log('🌞 Creating fallback sun sphere...');
+    console.log('Creating fallback sun sphere...');
 
     const sunGeometry = new THREE.SphereGeometry(80, 64, 64);
     const sunMaterial = new THREE.MeshBasicMaterial({
