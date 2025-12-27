@@ -1,10 +1,12 @@
 let scene, camera, renderer, controls;
-let sun, mercury, venus, earth, mars, jupiter;
+let sun, mercury, venus, earth, mars, jupiter, saturn, uranus;
 let mercuryOrbitAngle = 0;
 let venusOrbitAngle = 0;
 let earthOrbitAngle = 0;
 let marsOrbitAngle = 0;
 let jupiterOrbitAngle = 0;
+let saturnOrbitAngle = 0;
+let uranusOrbitAngle = 0;
 let isPaused = false;
 let grid = null;
 let planetSizeMultiplier = 1.0;
@@ -13,10 +15,10 @@ function init() {
     scene = new THREE.Scene();
     scene.background = new THREE.Color(0xFFFFFF);
     camera = new THREE.PerspectiveCamera(
-        75,
+        90,
         window.innerWidth / window.innerHeight,
         0.1,
-        1000000
+        2000000
     );
     camera.position.set(10000, 10000, 10000);
     camera.lookAt(0, 0, 0);
@@ -50,6 +52,8 @@ function init() {
         loadEarthModel();
         loadMarsModel();
         loadJupiterModel();
+        loadSaturnModel();
+        loadUranusModel();
     } else {
         console.warn('GLTFLoader not available, using fallback sun');
     }
@@ -128,7 +132,9 @@ function updatePlanetSizes() {
         venus: 5.0,
         earth: 5.0,
         mars: 2.5,
-        jupiter: 0.25
+        jupiter: 0.25,
+        saturn: 25.0,
+        uranus: 0.065
     };
 
     if (mercury) mercury.scale.setScalar(baseScales.mercury * planetSizeMultiplier);
@@ -136,10 +142,12 @@ function updatePlanetSizes() {
     if (earth) earth.scale.setScalar(baseScales.earth * planetSizeMultiplier);
     if (mars) mars.scale.setScalar(baseScales.mars * planetSizeMultiplier);
     if (jupiter) jupiter.scale.setScalar(baseScales.jupiter * planetSizeMultiplier);
+    if (saturn) saturn.scale.setScalar(baseScales.saturn * planetSizeMultiplier);
+    if (uranus) uranus.scale.setScalar(baseScales.uranus * planetSizeMultiplier);
 }
 
 function createInfiniteGrid() {
-    const gridSize = 10000;
+    const gridSize = 20000;
     const gridDivisions = 100;
     const gridStep = gridSize / gridDivisions;
     grid = new THREE.Group();
@@ -169,6 +177,7 @@ function createInfiniteGrid() {
         }
     }
     scene.add(grid);
+    grid.visible = false; // Hide grid by default
 }
 function loadSunModel() {
     const loader = new THREE.GLTFLoader();
@@ -322,6 +331,70 @@ function loadJupiterModel() {
         }
     );
 }
+function loadSaturnModel() {
+    const loader = new THREE.GLTFLoader();
+    const saturnOrbitRadius = 9500;
+    loader.load(
+        '/static/assets/saturn.glb',
+        function (gltf) {
+            saturn = gltf.scene;
+            saturn.scale.set(25.0, 25.0, 25.0);
+            saturn.position.set(saturnOrbitRadius, 0, 0);
+            saturn.traverse((child) => {
+                if (child.isMesh) {
+                }
+            });
+            scene.add(saturn);
+            createOrbitLine(saturnOrbitRadius, 0xDAA520);
+        },
+        function (xhr) {
+        },
+        function (error) {
+            console.error('');
+        }
+    );
+}
+function loadUranusModel() {
+    const loader = new THREE.GLTFLoader();
+    const uranusOrbitRadius = 12000;
+
+    console.log('🌐 Loading Uranus model...');
+
+    loader.load(
+        '/static/assets/uranus.glb',
+        function (gltf) {
+            console.log('🌐 Uranus GLB file loaded successfully!');
+
+            uranus = gltf.scene;
+            uranus.scale.set(0.065, 0.065, 0.065);
+            uranus.position.set(uranusOrbitRadius, 0, 0);
+
+            uranus.traverse((child) => {
+                if (child.isMesh) {
+                    child.castShadow = true;
+                    child.receiveShadow = true;
+                }
+            });
+
+            scene.add(uranus);
+            console.log('✅ Uranus added to scene at position:', uranus.position);
+            console.log('✅ Uranus scale:', uranus.scale);
+
+            // Create orbit line
+            createOrbitLine(uranusOrbitRadius, 0x4FD8EB);
+            console.log('✅ Uranus orbit line created (cyan)');
+        },
+        function (xhr) {
+            const percentComplete = (xhr.loaded / xhr.total) * 100;
+            console.log('🌐 Uranus loading: ' + Math.round(percentComplete) + '%');
+        },
+        function (error) {
+            console.error('❌ FAILED to load Uranus model!');
+            console.error('❌ Error details:', error);
+            console.error('❌ Check if file exists at: /static/assets/uranus.glb');
+        }
+    );
+}
 function createOrbitLine(radius, color) {
     const orbitGeometry = new THREE.BufferGeometry();
     const orbitPoints = [];
@@ -413,6 +486,20 @@ function animate() {
             jupiter.position.x = Math.cos(jupiterOrbitAngle) * jupiterOrbitRadius;
             jupiter.position.z = Math.sin(jupiterOrbitAngle) * jupiterOrbitRadius;
             jupiter.rotation.y += 0.015;
+        }
+        if (saturn) {
+            saturnOrbitAngle += 0.0015;
+            const saturnOrbitRadius = 9500;
+            saturn.position.x = Math.cos(saturnOrbitAngle) * saturnOrbitRadius;
+            saturn.position.z = Math.sin(saturnOrbitAngle) * saturnOrbitRadius;
+            saturn.rotation.y += 0.012;
+        }
+        if (uranus) {
+            uranusOrbitAngle += 0.001;
+            const uranusOrbitRadius = 12000;
+            uranus.position.x = Math.cos(uranusOrbitAngle) * uranusOrbitRadius;
+            uranus.position.z = Math.sin(uranusOrbitAngle) * uranusOrbitRadius;
+            uranus.rotation.y += 0.01;
         }
     }
     renderer.render(scene, camera);
