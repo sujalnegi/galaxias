@@ -1,5 +1,5 @@
 let scene, camera, renderer, controls;
-let sun, mercury, venus, earth, mars, jupiter, saturn, uranus;
+let sun, mercury, venus, earth, mars, jupiter, saturn, uranus, neptune;
 let mercuryOrbitAngle = 0;
 let venusOrbitAngle = 0;
 let earthOrbitAngle = 0;
@@ -7,13 +7,14 @@ let marsOrbitAngle = 0;
 let jupiterOrbitAngle = 0;
 let saturnOrbitAngle = 0;
 let uranusOrbitAngle = 0;
+let neptuneOrbitAngle = 0;
 let isPaused = false;
 let grid = null;
 let planetSizeMultiplier = 1.0;
 function init() {
     const container = document.getElementById('canvas-container');
     scene = new THREE.Scene();
-    scene.background = new THREE.Color(0xFFFFFF);
+    scene.background = new THREE.Color(0x000000);
     camera = new THREE.PerspectiveCamera(
         90,
         window.innerWidth / window.innerHeight,
@@ -43,6 +44,8 @@ function init() {
     const directionalLight = new THREE.DirectionalLight(0xffffff, 1.5);
     directionalLight.position.set(0, 50, 50);
     scene.add(directionalLight);
+
+    createStarfield();
     createInfiniteGrid();
     createFallbackSun();
     if (typeof THREE.GLTFLoader !== 'undefined') {
@@ -54,6 +57,7 @@ function init() {
         loadJupiterModel();
         loadSaturnModel();
         loadUranusModel();
+        loadNeptuneModel();
     } else {
         console.warn('GLTFLoader not available, using fallback sun');
     }
@@ -134,7 +138,8 @@ function updatePlanetSizes() {
         mars: 2.5,
         jupiter: 0.25,
         saturn: 25.0,
-        uranus: 0.065
+        uranus: 0.065,
+        neptune: 0.065
     };
 
     if (mercury) mercury.scale.setScalar(baseScales.mercury * planetSizeMultiplier);
@@ -144,6 +149,53 @@ function updatePlanetSizes() {
     if (jupiter) jupiter.scale.setScalar(baseScales.jupiter * planetSizeMultiplier);
     if (saturn) saturn.scale.setScalar(baseScales.saturn * planetSizeMultiplier);
     if (uranus) uranus.scale.setScalar(baseScales.uranus * planetSizeMultiplier);
+    if (neptune) neptune.scale.setScalar(baseScales.neptune * planetSizeMultiplier);
+}
+
+function createStarfield() {
+    const starGeometry = new THREE.BufferGeometry();
+    const starCount = 10000;
+    const positions = new Float32Array(starCount * 3);
+    const colors = new Float32Array(starCount * 3);
+
+    // Star color options: white, faint red, faint blue, faint green
+    const starColors = [
+        { r: 1.0, g: 1.0, b: 1.0 },      // Shiny white (most common)
+        { r: 1.0, g: 0.3, b: 0.3 },      // Faint red
+        { r: 0.3, g: 0.5, b: 1.0 },      // Faint blue
+        { r: 0.3, g: 1.0, b: 0.5 }       // Faint green
+    ];
+
+    for (let i = 0; i < starCount; i++) {
+        // Random position in a large sphere around the scene
+        const radius = 100000 + Math.random() * 50000;
+        const theta = Math.random() * Math.PI * 2;
+        const phi = Math.acos(2 * Math.random() - 1);
+
+        positions[i * 3] = radius * Math.sin(phi) * Math.cos(theta);
+        positions[i * 3 + 1] = radius * Math.sin(phi) * Math.sin(theta);
+        positions[i * 3 + 2] = radius * Math.cos(phi);
+
+        // Assign random color (80% white, 20% colored)
+        const colorChoice = Math.random() < 0.8 ? starColors[0] : starColors[Math.floor(Math.random() * 4)];
+        colors[i * 3] = colorChoice.r;
+        colors[i * 3 + 1] = colorChoice.g;
+        colors[i * 3 + 2] = colorChoice.b;
+    }
+
+    starGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    starGeometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+
+    const starMaterial = new THREE.PointsMaterial({
+        size: 100,
+        vertexColors: true,
+        transparent: true,
+        opacity: 0.8,
+        sizeAttenuation: true
+    });
+
+    const stars = new THREE.Points(starGeometry, starMaterial);
+    scene.add(stars);
 }
 
 function createInfiniteGrid() {
@@ -212,7 +264,7 @@ function loadSunModel() {
 }
 function loadMercuryModel() {
     const loader = new THREE.GLTFLoader();
-    const mercuryOrbitRadius = 1500;
+    const mercuryOrbitRadius = 2160;
     loader.load(
         '/static/assets/mercury.glb',
         function (gltf) {
@@ -235,7 +287,7 @@ function loadMercuryModel() {
 }
 function loadVenusModel() {
     const loader = new THREE.GLTFLoader();
-    const venusOrbitRadius = 2300;
+    const venusOrbitRadius = 3170;
     console.log('🪐 Attempting to load venus.glb...');
     loader.load(
         '/static/assets/venus.glb',
@@ -260,7 +312,7 @@ function loadVenusModel() {
 }
 function loadEarthModel() {
     const loader = new THREE.GLTFLoader();
-    const earthOrbitRadius = 3000;
+    const earthOrbitRadius = 4000;
 
     loader.load(
         '/static/assets/earth.glb',
@@ -287,7 +339,7 @@ function loadEarthModel() {
 }
 function loadMarsModel() {
     const loader = new THREE.GLTFLoader();
-    const marsOrbitRadius = 4500;
+    const marsOrbitRadius = 5570;
     loader.load(
         '/static/assets/mars.glb',
         function (gltf) {
@@ -310,7 +362,7 @@ function loadMarsModel() {
 }
 function loadJupiterModel() {
     const loader = new THREE.GLTFLoader();
-    const jupiterOrbitRadius = 7000;
+    const jupiterOrbitRadius = 16600;
     loader.load(
         '/static/assets/jupiter.glb',
         function (gltf) {
@@ -333,7 +385,7 @@ function loadJupiterModel() {
 }
 function loadSaturnModel() {
     const loader = new THREE.GLTFLoader();
-    const saturnOrbitRadius = 9500;
+    const saturnOrbitRadius = 29600;
     loader.load(
         '/static/assets/saturn.glb',
         function (gltf) {
@@ -356,7 +408,7 @@ function loadSaturnModel() {
 }
 function loadUranusModel() {
     const loader = new THREE.GLTFLoader();
-    const uranusOrbitRadius = 12000;
+    const uranusOrbitRadius = 58500;
 
     console.log('🌐 Loading Uranus model...');
 
@@ -392,6 +444,47 @@ function loadUranusModel() {
             console.error('❌ FAILED to load Uranus model!');
             console.error('❌ Error details:', error);
             console.error('❌ Check if file exists at: /static/assets/uranus.glb');
+        }
+    );
+}
+function loadNeptuneModel() {
+    const loader = new THREE.GLTFLoader();
+    const neptuneOrbitRadius = 91100;
+
+    console.log('🔵 Loading Neptune model...');
+
+    loader.load(
+        '/static/assets/neptune.glb',
+        function (gltf) {
+            console.log('🔵 Neptune GLB file loaded successfully!');
+
+            neptune = gltf.scene;
+            neptune.scale.set(0.065, 0.065, 0.065);
+            neptune.position.set(neptuneOrbitRadius, 0, 0);
+
+            neptune.traverse((child) => {
+                if (child.isMesh) {
+                    child.castShadow = true;
+                    child.receiveShadow = true;
+                }
+            });
+
+            scene.add(neptune);
+            console.log('✅ Neptune added to scene at position:', neptune.position);
+            console.log('✅ Neptune scale:', neptune.scale);
+
+            // Create orbit line
+            createOrbitLine(neptuneOrbitRadius, 0x4169E1);
+            console.log('✅ Neptune orbit line created (deep blue)');
+        },
+        function (xhr) {
+            const percentComplete = (xhr.loaded / xhr.total) * 100;
+            console.log('🔵 Neptune loading: ' + Math.round(percentComplete) + '%');
+        },
+        function (error) {
+            console.error('❌ FAILED to load Neptune model!');
+            console.error('❌ Error details:', error);
+            console.error('❌ Check if file exists at: /static/assets/neptune.glb');
         }
     );
 }
@@ -454,52 +547,59 @@ function animate() {
         }
         if (mercury) {
             mercuryOrbitAngle += 0.01;
-            const mercuryOrbitRadius = 1500;
+            const mercuryOrbitRadius = 2160;
             mercury.position.x = Math.cos(mercuryOrbitAngle) * mercuryOrbitRadius;
             mercury.position.z = Math.sin(mercuryOrbitAngle) * mercuryOrbitRadius;
             mercury.rotation.y += 0.005;
         }
         if (venus) {
             venusOrbitAngle += 0.007;
-            const venusOrbitRadius = 2300;
+            const venusOrbitRadius = 3170;
             venus.position.x = Math.cos(venusOrbitAngle) * venusOrbitRadius;
             venus.position.z = Math.sin(venusOrbitAngle) * venusOrbitRadius;
             venus.rotation.y += 0.003;
         }
         if (earth) {
             earthOrbitAngle += 0.005;
-            const earthOrbitRadius = 3000;
+            const earthOrbitRadius = 4000;
             earth.position.x = Math.cos(earthOrbitAngle) * earthOrbitRadius;
             earth.position.z = Math.sin(earthOrbitAngle) * earthOrbitRadius;
             earth.rotation.y += 0.01;
         }
         if (mars) {
             marsOrbitAngle += 0.003;
-            const marsOrbitRadius = 4500;
+            const marsOrbitRadius = 5570;
             mars.position.x = Math.cos(marsOrbitAngle) * marsOrbitRadius;
             mars.position.z = Math.sin(marsOrbitAngle) * marsOrbitRadius;
             mars.rotation.y += 0.008;
         }
         if (jupiter) {
             jupiterOrbitAngle += 0.002;
-            const jupiterOrbitRadius = 7000;
+            const jupiterOrbitRadius = 16600;
             jupiter.position.x = Math.cos(jupiterOrbitAngle) * jupiterOrbitRadius;
             jupiter.position.z = Math.sin(jupiterOrbitAngle) * jupiterOrbitRadius;
             jupiter.rotation.y += 0.015;
         }
         if (saturn) {
             saturnOrbitAngle += 0.0015;
-            const saturnOrbitRadius = 9500;
+            const saturnOrbitRadius = 29600;
             saturn.position.x = Math.cos(saturnOrbitAngle) * saturnOrbitRadius;
             saturn.position.z = Math.sin(saturnOrbitAngle) * saturnOrbitRadius;
             saturn.rotation.y += 0.012;
         }
         if (uranus) {
             uranusOrbitAngle += 0.001;
-            const uranusOrbitRadius = 12000;
+            const uranusOrbitRadius = 58500;
             uranus.position.x = Math.cos(uranusOrbitAngle) * uranusOrbitRadius;
             uranus.position.z = Math.sin(uranusOrbitAngle) * uranusOrbitRadius;
             uranus.rotation.y += 0.01;
+        }
+        if (neptune) {
+            neptuneOrbitAngle += 0.0008;
+            const neptuneOrbitRadius = 91100;
+            neptune.position.x = Math.cos(neptuneOrbitAngle) * neptuneOrbitRadius;
+            neptune.position.z = Math.sin(neptuneOrbitAngle) * neptuneOrbitRadius;
+            neptune.rotation.y += 0.009;
         }
     }
     renderer.render(scene, camera);
