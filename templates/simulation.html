@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,17 +13,28 @@
         href="https://fonts.googleapis.com/css2?family=Shabo:wght@400;700;900&family=Korvich:wght@400;700&display=swap"
         rel="stylesheet">
 </head>
+
 <body>
     <div id="canvas-container"></div>
+    <div class="scale-slider-container">
+        <div class="scale-label">Scale</div>
+        <input type="range" id="scaleSlider" class="vertical-slider" orient="vertical" min="0.1" max="5" step="0.1"
+            value="1">
+        <div class="scale-value" id="scaleValue">1.0x</div>
+    </div>
     <div class="zoom-controls">
         <button id="playPauseBtn" class="zoom-btn">||</button>
         <button id="gridToggleBtn" class="zoom-btn">⊡</button>
+        <button id="orbitToggleBtn" class="zoom-btn">◯</button>
+        <button id="recentreBtn" class="zoom-btn">⊙</button>
         <button id="zoomInBtn" class="zoom-btn">+</button>
         <button id="zoomOutBtn" class="zoom-btn">−</button>
     </div>
     <div class="planet-size-controls">
         <button id="planetSizeIncreaseBtn" class="size-btn">+</button>
         <button id="planetSizeDecreaseBtn" class="size-btn">−</button>
+        <button id="resizeMaxBtn" class="size-btn resize-max-btn">Max</button>
+        <button id="resizeMinBtn" class="size-btn resize-min-btn">Min</button>
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.rawgit.com/mrdoob/three.js/r128/examples/js/loaders/GLTFLoader.js"></script>

@@ -11,6 +11,20 @@ let neptuneOrbitAngle = 0;
 let isPaused = false;
 let grid = null;
 let planetSizeMultiplier = 1.0;
+let orbitLines = [];
+let orbitsVisible = true;
+const DEFAULT_CAMERA_POSITION = { x: 10000, y: 10000, z: 10000 };
+const BASE_ORBIT_RADII = {
+    mercury: 2160,
+    venus: 3170,
+    earth: 4000,
+    mars: 5570,
+    jupiter: 16600,
+    saturn: 29600,
+    uranus: 58500,
+    neptune: 91100
+};
+let orbitScaleMultiplier = 1.0;
 function init() {
     const container = document.getElementById('canvas-container');
     scene = new THREE.Scene();
@@ -64,13 +78,19 @@ function init() {
     window.addEventListener('resize', onWindowResize);
     const playPauseBtn = document.getElementById('playPauseBtn');
     const gridToggleBtn = document.getElementById('gridToggleBtn');
+    const orbitToggleBtn = document.getElementById('orbitToggleBtn');
+    const recentreBtn = document.getElementById('recentreBtn');
     const zoomInBtn = document.getElementById('zoomInBtn');
     const zoomOutBtn = document.getElementById('zoomOutBtn');
     const planetSizeIncreaseBtn = document.getElementById('planetSizeIncreaseBtn');
     const planetSizeDecreaseBtn = document.getElementById('planetSizeDecreaseBtn');
+    const resizeMaxBtn = document.getElementById('resizeMaxBtn');
+    const resizeMinBtn = document.getElementById('resizeMinBtn');
 
     playPauseBtn.addEventListener('click', togglePlayPause);
     gridToggleBtn.addEventListener('click', toggleGrid);
+    orbitToggleBtn.addEventListener('click', toggleOrbits);
+    recentreBtn.addEventListener('click', recentreCamera);
 
     planetSizeIncreaseBtn.addEventListener('click', () => {
         planetSizeMultiplier *= 1.2;
@@ -81,6 +101,51 @@ function init() {
         planetSizeMultiplier *= 0.8;
         updatePlanetSizes();
     });
+
+    resizeMaxBtn.addEventListener('click', () => {
+        planetSizeMultiplier = 10.0;
+        orbitScaleMultiplier = 10.0;
+        const scaleSlider = document.getElementById('scaleSlider');
+        const scaleValue = document.getElementById('scaleValue');
+        if (scaleSlider && scaleSlider.max >= 10) {
+            scaleSlider.value = 10.0;
+        } else if (scaleSlider) {
+            scaleSlider.value = scaleSlider.max;
+        }
+        if (scaleValue) {
+            scaleValue.textContent = planetSizeMultiplier.toFixed(1) + 'x';
+        }
+        updatePlanetSizes();
+        updateOrbitLines();
+    });
+
+    resizeMinBtn.addEventListener('click', () => {
+        planetSizeMultiplier = 1.0;
+        orbitScaleMultiplier = 1.0;
+        const scaleSlider = document.getElementById('scaleSlider');
+        const scaleValue = document.getElementById('scaleValue');
+        if (scaleSlider) {
+            scaleSlider.value = 1.0;
+        }
+        if (scaleValue) {
+            scaleValue.textContent = '1.0x';
+        }
+        updatePlanetSizes();
+        updateOrbitLines();
+    });
+
+    const scaleSlider = document.getElementById('scaleSlider');
+    const scaleValue = document.getElementById('scaleValue');
+
+    scaleSlider.addEventListener('input', (e) => {
+        const sliderValue = parseFloat(e.target.value);
+        planetSizeMultiplier = sliderValue;
+        orbitScaleMultiplier = sliderValue;
+        scaleValue.textContent = sliderValue.toFixed(1) + 'x';
+        updatePlanetSizes();
+        updateOrbitLines();
+    });
+
     zoomInBtn.addEventListener('click', () => {
         const direction = camera.position.clone().normalize();
         camera.position.sub(direction.multiplyScalar(500));
@@ -97,6 +162,14 @@ function init() {
         if (e.code === 'KeyG') {
             e.preventDefault();
             toggleGrid();
+        }
+        if (e.code === 'KeyO') {
+            e.preventDefault();
+            toggleOrbits();
+        }
+        if (e.code === 'KeyX') {
+            e.preventDefault();
+            recentreCamera();
         }
         if (e.code === 'ArrowUp') {
             e.preventDefault();
@@ -129,9 +202,44 @@ function toggleGrid() {
         gridToggleBtn.textContent = grid.visible ? '⊞' : '⊡';
     }
 }
+function toggleOrbits() {
+    orbitsVisible = !orbitsVisible;
+    orbitLines.forEach(orbit => {
+        orbit.visible = orbitsVisible;
+    });
+    const orbitToggleBtn = document.getElementById('orbitToggleBtn');
+    if (orbitToggleBtn) {
+        orbitToggleBtn.textContent = orbitsVisible ? '◯' : '○';
+    }
+}
+function recentreCamera() {
+    camera.position.set(DEFAULT_CAMERA_POSITION.x, DEFAULT_CAMERA_POSITION.y, DEFAULT_CAMERA_POSITION.z);
+    camera.lookAt(0, 0, 0);
+    if (controls) {
+        controls.target.set(0, 0, 0);
+        controls.update();
+    }
+}
+
+function updateOrbitLines() {
+    orbitLines.forEach(orbit => {
+        scene.remove(orbit);
+    });
+    orbitLines = [];
+
+    createOrbitLine(BASE_ORBIT_RADII.mercury * orbitScaleMultiplier, 0x8C7853);
+    createOrbitLine(BASE_ORBIT_RADII.venus * orbitScaleMultiplier, 0xFFC649);
+    createOrbitLine(BASE_ORBIT_RADII.earth * orbitScaleMultiplier, 0x4A90E2);
+    createOrbitLine(BASE_ORBIT_RADII.mars * orbitScaleMultiplier, 0xCD5C5C);
+    createOrbitLine(BASE_ORBIT_RADII.jupiter * orbitScaleMultiplier, 0xFFA500);
+    createOrbitLine(BASE_ORBIT_RADII.saturn * orbitScaleMultiplier, 0xDAA520);
+    createOrbitLine(BASE_ORBIT_RADII.uranus * orbitScaleMultiplier, 0x4FD8EB);
+    createOrbitLine(BASE_ORBIT_RADII.neptune * orbitScaleMultiplier, 0x4169E1);
+}
 
 function updatePlanetSizes() {
     const baseScales = {
+        sun: 100,
         mercury: 0.01,
         venus: 5.0,
         earth: 5.0,
@@ -142,6 +250,7 @@ function updatePlanetSizes() {
         neptune: 0.065
     };
 
+    if (sun) sun.scale.setScalar(baseScales.sun * planetSizeMultiplier);
     if (mercury) mercury.scale.setScalar(baseScales.mercury * planetSizeMultiplier);
     if (venus) venus.scale.setScalar(baseScales.venus * planetSizeMultiplier);
     if (earth) earth.scale.setScalar(baseScales.earth * planetSizeMultiplier);
@@ -159,10 +268,10 @@ function createStarfield() {
     const colors = new Float32Array(starCount * 3);
 
     const starColors = [
-        { r: 1.0, g: 1.0, b: 1.0 },      
-        { r: 1.0, g: 0.3, b: 0.3 },      
-        { r: 0.3, g: 0.5, b: 1.0 },      
-        { r: 0.3, g: 1.0, b: 0.5 }       
+        { r: 1.0, g: 1.0, b: 1.0 },
+        { r: 1.0, g: 0.3, b: 0.3 },
+        { r: 0.3, g: 0.5, b: 1.0 },
+        { r: 0.3, g: 1.0, b: 0.5 }
     ];
 
     for (let i = 0; i < starCount; i++) {
@@ -498,6 +607,7 @@ function createOrbitLine(radius, color) {
         opacity: 0.3
     });
     const orbit = new THREE.Line(orbitGeometry, orbitMaterial);
+    orbitLines.push(orbit);
     scene.add(orbit);
 }
 function createFallbackSun() {
@@ -536,56 +646,56 @@ function animate() {
         }
         if (mercury) {
             mercuryOrbitAngle += 0.01;
-            const mercuryOrbitRadius = 2160;
+            const mercuryOrbitRadius = BASE_ORBIT_RADII.mercury * orbitScaleMultiplier;
             mercury.position.x = Math.cos(mercuryOrbitAngle) * mercuryOrbitRadius;
             mercury.position.z = Math.sin(mercuryOrbitAngle) * mercuryOrbitRadius;
             mercury.rotation.y += 0.005;
         }
         if (venus) {
             venusOrbitAngle += 0.007;
-            const venusOrbitRadius = 3170;
+            const venusOrbitRadius = BASE_ORBIT_RADII.venus * orbitScaleMultiplier;
             venus.position.x = Math.cos(venusOrbitAngle) * venusOrbitRadius;
             venus.position.z = Math.sin(venusOrbitAngle) * venusOrbitRadius;
             venus.rotation.y += 0.003;
         }
         if (earth) {
             earthOrbitAngle += 0.005;
-            const earthOrbitRadius = 4000;
+            const earthOrbitRadius = BASE_ORBIT_RADII.earth * orbitScaleMultiplier;
             earth.position.x = Math.cos(earthOrbitAngle) * earthOrbitRadius;
             earth.position.z = Math.sin(earthOrbitAngle) * earthOrbitRadius;
             earth.rotation.y += 0.01;
         }
         if (mars) {
             marsOrbitAngle += 0.003;
-            const marsOrbitRadius = 5570;
+            const marsOrbitRadius = BASE_ORBIT_RADII.mars * orbitScaleMultiplier;
             mars.position.x = Math.cos(marsOrbitAngle) * marsOrbitRadius;
             mars.position.z = Math.sin(marsOrbitAngle) * marsOrbitRadius;
             mars.rotation.y += 0.008;
         }
         if (jupiter) {
             jupiterOrbitAngle += 0.002;
-            const jupiterOrbitRadius = 16600;
+            const jupiterOrbitRadius = BASE_ORBIT_RADII.jupiter * orbitScaleMultiplier;
             jupiter.position.x = Math.cos(jupiterOrbitAngle) * jupiterOrbitRadius;
             jupiter.position.z = Math.sin(jupiterOrbitAngle) * jupiterOrbitRadius;
             jupiter.rotation.y += 0.015;
         }
         if (saturn) {
             saturnOrbitAngle += 0.0015;
-            const saturnOrbitRadius = 29600;
+            const saturnOrbitRadius = BASE_ORBIT_RADII.saturn * orbitScaleMultiplier;
             saturn.position.x = Math.cos(saturnOrbitAngle) * saturnOrbitRadius;
             saturn.position.z = Math.sin(saturnOrbitAngle) * saturnOrbitRadius;
             saturn.rotation.y += 0.012;
         }
         if (uranus) {
             uranusOrbitAngle += 0.001;
-            const uranusOrbitRadius = 58500;
+            const uranusOrbitRadius = BASE_ORBIT_RADII.uranus * orbitScaleMultiplier;
             uranus.position.x = Math.cos(uranusOrbitAngle) * uranusOrbitRadius;
             uranus.position.z = Math.sin(uranusOrbitAngle) * uranusOrbitRadius;
             uranus.rotation.y += 0.01;
         }
         if (neptune) {
             neptuneOrbitAngle += 0.0008;
-            const neptuneOrbitRadius = 91100;
+            const neptuneOrbitRadius = BASE_ORBIT_RADII.neptune * orbitScaleMultiplier;
             neptune.position.x = Math.cos(neptuneOrbitAngle) * neptuneOrbitRadius;
             neptune.position.z = Math.sin(neptuneOrbitAngle) * neptuneOrbitRadius;
             neptune.rotation.y += 0.009;
