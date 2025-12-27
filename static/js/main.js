@@ -60,6 +60,17 @@ function createParticles() {
         container.appendChild(particle);
     }
 }
+function setupGPUWarning() {
+    const warningOverlay = document.getElementById('gpuWarning');
+    const closeButton = document.getElementById('closeWarning');
+
+    closeButton.addEventListener('click', () => {
+        warningOverlay.classList.add('hidden');
+        setTimeout(() => {
+            warningOverlay.style.display = 'none';
+        }, 500);
+    });
+}
 function setupGoButton() {
     const goButton = document.getElementById('goButton');
     goButton.addEventListener('click', () => {
@@ -71,6 +82,7 @@ function setupGoButton() {
     });
 }
 document.addEventListener('DOMContentLoaded', () => {
+    setupGPUWarning();
     createStarfield();
     createShootingStars();
     createParticles();
@@ -82,10 +94,22 @@ function create3DStars() {
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
     camera.position.z = 5;
-    const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
-    renderer.setSize(window.innerWidth * 8, window.innerHeight * 8);
-    renderer.setPixelRatio(window.devicePixelRatio);
-    container.appendChild(renderer.domElement);
+
+    let renderer;
+    try {
+        renderer = new THREE.WebGLRenderer({
+            alpha: true,
+            antialias: true,
+            failIfMajorPerformanceCaveat: false
+        });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        container.appendChild(renderer.domElement);
+    } catch (error) {
+        console.warn('WebGL not supported, skipping 3D stars animation');
+        return;
+    }
+
     const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
     scene.add(ambientLight);
     const pointLight = new THREE.PointLight(0xffffff, 1);
@@ -136,6 +160,6 @@ function create3DStars() {
     window.addEventListener('resize', () => {
         camera.aspect = window.innerWidth / window.innerHeight;
         camera.updateProjectionMatrix();
-        renderer.setSize(window.innerWidth * 8, window.innerHeight * 8);
+        renderer.setSize(window.innerWidth, window.innerHeight);
     });
 }

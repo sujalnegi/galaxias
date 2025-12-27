@@ -15,6 +15,40 @@
 </head>
 
 <body>
+    <div class="gpu-warning-overlay" id="gpuWarning">
+        <div class="gpu-warning-popup">
+            <div class="warning-icon">⚠️</div>
+            <h2 class="warning-title">High GPU Usage Warning</h2>
+            <div class="warning-content">
+                <p class="warning-text">
+                    This site utilizes <strong>intensive 3D graphics</strong> and may consume significant GPU resources.
+                </p>
+                <div class="warning-checklist">
+                    <div class="checklist-item">
+                        <span class="check-icon">✅</span>
+                        <span>Ensure your device has sufficient GPU capacity</span>
+                    </div>
+                    <div class="checklist-item">
+                        <span class="check-icon">✅</span>
+                        <span>Check console for any WebGL errors</span>
+                    </div>
+                    <div class="checklist-item">
+                        <span class="check-icon">✅</span>
+                        <span>If you can see the star belt animation, your device is capable</span>
+                    </div>
+                    <div class="checklist-item">
+                        <span class="check-icon">📝</span>
+                        <span>Note for Reviewers: Please run it locally from the given source code in github</span>
+                    </div>
+                </div>
+                <p class="warning-note">
+                    <strong>Note:</strong> Close other GPU-intensive applications for optimal performance.
+                </p>
+            </div>
+            <button class="warning-button" id="closeWarning">I Understand, Continue</button>
+        </div>
+    </div>
+
     <div id="stars-canvas"></div>
     <div class="starfield" id="starfield"></div>
     <div class="container">
