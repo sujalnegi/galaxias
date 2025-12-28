@@ -23,20 +23,43 @@
             <button class="control-btn" id="resetBtn">Reset</button>
         </div>
     </div>
-    <div class="left-sidebar">
-        <h3>Add Objects</h3>
-        <div class="object-palette">
-            <button class="palette-btn" data-object="star">Star</button>
-            <button class="palette-btn" data-object="planet">Planet</button>
-            <button class="palette-btn" data-object="moon">Moon</button>
+    <div class="sidebar-menu">
+        <div class="menu-section">
+            <h3 class="menu-title">Planets</h3>
+            <div class="menu-items">
+                <button class="menu-item" data-type="planet" data-name="Mercury">Mercury</button>
+                <button class="menu-item" data-type="planet" data-name="Venus">Venus</button>
+                <button class="menu-item" data-type="planet" data-name="Earth">Earth</button>
+                <button class="menu-item" data-type="planet" data-name="Mars">Mars</button>
+                <button class="menu-item" data-type="planet" data-name="Jupiter">Jupiter</button>
+                <button class="menu-item" data-type="planet" data-name="Saturn">Saturn</button>
+                <button class="menu-item" data-type="planet" data-name="Uranus">Uranus</button>
+                <button class="menu-item" data-type="planet" data-name="Neptune">Neptune</button>
+            </div>
+        </div>
+        <div class="menu-section">
+            <h3 class="menu-title">Stars</h3>
+            <div class="menu-items">
+                <button class="menu-item" data-type="star" data-name="Sun">Sun</button>
+                <button class="menu-item" data-type="star" data-name="Red Giant">Red Giant</button>
+                <button class="menu-item" data-type="star" data-name="White Dwarf">White Dwarf</button>
+            </div>
         </div>
     </div>
     <div class="right-sidebar">
-        <h3>Properties</h3>
-        <div class="properties-panel" id="propertiesPanel">
-            <p class="no-selection">Select an object to edit its properties</p>
+        <h3 class="menu-title">Background Color</h3>
+        <div class="color-options">
+            <button class="color-btn" data-color="#FFFFFF"
+                style="background: #FFFFFF; border-color: #999;">White</button>
+            <button class="color-btn" data-color="#000000" style="background: #000000;">Black</button>
+            <button class="color-btn" data-color="#F5F5F5"
+                style="background: #F5F5F5; border-color: #999;">Off-White</button>
+            <button class="color-btn" data-color="#808080" style="background: #808080;">Grey</button>
         </div>
     </div>
+
+
+
     <footer class="github-footer">
         Checkout <a href="https://github.com/sujalnegi/galaxias" target="_blank" rel="noopener noreferrer">Galaxias</a>
         at GitHub
