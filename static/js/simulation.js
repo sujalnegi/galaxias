@@ -750,7 +750,8 @@ function animate() {
     }
     if (focusedPlanet) {
         const sunToPlanet = focusedPlanet.position.clone().normalize();
-        const targetPos = focusedPlanet.position.clone().add(sunToPlanet.multiplyScalar(100)); // Orbit + 100
+        const scaledOffset = 100 * planetSizeMultiplier;
+        const targetPos = focusedPlanet.position.clone().add(sunToPlanet.multiplyScalar(scaledOffset)); // Orbit + 100
         targetPos.y = 30;
         camera.position.lerp(targetPos, 0.05);
         camera.lookAt(0, 0, 0);
@@ -763,11 +764,3 @@ function animate() {
     renderer.render(scene, camera);
 }
 document.addEventListener('DOMContentLoaded', init);
-
-
-/*
-
-decrease the label size and position of venus by 3
- not really working 
- khane 
-*/ 
