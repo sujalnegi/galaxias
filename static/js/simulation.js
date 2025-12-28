@@ -27,6 +27,8 @@ const BASE_ORBIT_RADII = {
 let orbitScaleMultiplier = 1.0;
 let simulationSpeed = 1.0;
 let labels = {};
+let labelsVisible = true;
+let focusedPlanet = null; 
 function init() {
     const container = document.getElementById('canvas-container');
     scene = new THREE.Scene();
@@ -73,6 +75,7 @@ function init() {
     const playPauseBtn = document.getElementById('playPauseBtn');
     const gridToggleBtn = document.getElementById('gridToggleBtn');
     const orbitToggleBtn = document.getElementById('orbitToggleBtn');
+    const labelToggleBtn = document.getElementById('labelToggleBtn');
     const recentreBtn = document.getElementById('recentreBtn');
     const zoomInBtn = document.getElementById('zoomInBtn');
     const zoomOutBtn = document.getElementById('zoomOutBtn');
@@ -83,6 +86,7 @@ function init() {
     playPauseBtn.addEventListener('click', togglePlayPause);
     gridToggleBtn.addEventListener('click', toggleGrid);
     orbitToggleBtn.addEventListener('click', toggleOrbits);
+    labelToggleBtn.addEventListener('click', toggleLabels);
     recentreBtn.addEventListener('click', recentreCamera);
     planetSizeIncreaseBtn.addEventListener('click', () => {
         planetSizeMultiplier *= 1.2;
@@ -190,6 +194,10 @@ function init() {
             e.preventDefault();
             toggleOrbits();
         }
+        if (e.code === 'KeyL') {
+            e.preventDefault();
+            toggleLabels();
+        }
         if (e.code === 'KeyX') {
             e.preventDefault();
             recentreCamera();
@@ -212,6 +220,9 @@ function init() {
         }
     });
     scaleSlider.style.setProperty('--slider-percent', '18.4%');
+    scaleSlider.style.setProperty('--slider-percent', '18.4%');
+    populatePlanetDropdown();
+    document.getElementById('planetDropdown').addEventListener('change', onPlanetSelect);
     animate();
 }
 function takeScreenshot() {
@@ -256,12 +267,108 @@ function toggleOrbits() {
     }
 }
 
+function toggleLabels() {
+    labelsVisible = !labelsVisible;
+    Object.values(labels).forEach(label => {
+        label.visible = labelsVisible;
+    });
+    const labelToggleBtn = document.getElementById('labelToggleBtn');
+    if (labelToggleBtn) {
+        const icon = labelToggleBtn.querySelector('.material-icons');
+        icon.textContent = labelsVisible ? 'label' : 'label_off';
+    }
+}
+
 function recentreCamera() {
     camera.position.set(DEFAULT_CAMERA_POSITION.x, DEFAULT_CAMERA_POSITION.y, DEFAULT_CAMERA_POSITION.z);
     camera.lookAt(0, 0, 0);
     if (controls) {
         controls.target.set(0, 0, 0);
         controls.update();
+    }
+    focusedPlanet = null; 
+    hideRecentreToast();
+}
+
+function populatePlanetDropdown() {
+    const dropdown = document.getElementById('planetDropdown');
+    const planets = [
+        { name: 'Mercury', value: 'mercury' },
+        { name: 'Venus', value: 'venus' },
+        { name: 'Earth', value: 'earth' },
+        { name: 'Mars', value: 'mars' },
+        { name: 'Jupiter', value: 'jupiter' },
+        { name: 'Saturn', value: 'saturn' },
+        { name: 'Uranus', value: 'uranus' },
+        { name: 'Neptune', value: 'neptune' }
+    ];
+
+    planets.forEach(planet => {
+        const option = document.createElement('option');
+        option.value = planet.value;
+        option.textContent = planet.name;
+        dropdown.appendChild(option);
+    });
+}
+
+function onPlanetSelect(event) {
+    const planetKey = event.target.value;
+    let targetObject;
+    let targetRadius;
+
+    switch (planetKey) {
+        case 'mercury': targetObject = mercury; targetRadius = BASE_ORBIT_RADII.mercury; break;
+        case 'venus': targetObject = venus; targetRadius = BASE_ORBIT_RADII.venus; break;
+        case 'earth': targetObject = earth; targetRadius = BASE_ORBIT_RADII.earth; break;
+        case 'mars': targetObject = mars; targetRadius = BASE_ORBIT_RADII.mars; break;
+        case 'jupiter': targetObject = jupiter; targetRadius = BASE_ORBIT_RADII.jupiter; break;
+        case 'saturn': targetObject = saturn; targetRadius = BASE_ORBIT_RADII.saturn; break;
+        case 'uranus': targetObject = uranus; targetRadius = BASE_ORBIT_RADII.uranus; break;
+        case 'neptune': targetObject = neptune; targetRadius = BASE_ORBIT_RADII.neptune; break;
+    }
+
+    if (targetObject) {
+        focusedPlanet = targetObject;
+
+        // Trigger feedback: Glow button and show toast
+        const recentreBtn = document.getElementById('recentreBtn');
+        if (recentreBtn) {
+            recentreBtn.classList.add('glow-orange');
+        }
+        showRecentreToast();
+    }
+}
+
+function showRecentreToast() {
+    let toast = document.getElementById('recentreToast');
+    if (!toast) {
+        toast = document.createElement('div');
+        toast.id = 'recentreToast';
+        toast.className = 'toast-notification';
+        toast.textContent = 'Press X to recentre the camera';
+        document.body.appendChild(toast);
+    }
+    void toast.offsetWidth;
+    toast.classList.remove('toast-hidden');
+    toast.classList.add('toast-visible');
+
+    const audio = new Audio('/static/assets/toastnotification.mp3');
+    audio.play().catch(e => console.log('Audio play failed:', e));
+    if (toast.timeoutId) clearTimeout(toast.timeoutId);
+    toast.timeoutId = setTimeout(() => {
+        hideRecentreToast();
+    }, 5000);
+}
+
+function hideRecentreToast() {
+    const toast = document.getElementById('recentreToast');
+    if (toast) {
+        toast.classList.remove('toast-visible');
+        toast.classList.add('toast-hidden');
+    }
+    const recentreBtn = document.getElementById('recentreBtn');
+    if (recentreBtn) {
+        recentreBtn.classList.remove('glow-orange');
     }
 }
 
@@ -421,7 +528,7 @@ function loadMercuryModel() {
         mercury.scale.set(0.01, 0.01, 0.01);
         mercury.position.set(mercuryOrbitRadius, 0, 0);
         scene.add(mercury);
-        labels.mercury = createLabel('Mercury', 20);
+        labels.mercury = createLabel('Mercury', 60 / 0.01, 400 / 0.01);
         mercury.add(labels.mercury);
         createOrbitLine(mercuryOrbitRadius, 0x8C7853);
     });
@@ -477,7 +584,7 @@ function loadJupiterModel() {
         jupiter.scale.set(0.25, 0.25, 0.25);
         jupiter.position.set(jupiterOrbitRadius, 0, 0);
         scene.add(jupiter);
-        labels.jupiter = createLabel('Jupiter', 70);
+        labels.jupiter = createLabel('Jupiter', 60 / 0.25, 400 / 0.25);
         jupiter.add(labels.jupiter);
         createOrbitLine(jupiterOrbitRadius, 0xFFA500);
     });
@@ -509,7 +616,7 @@ function loadUranusModel() {
             }
         });
         scene.add(uranus);
-        labels.uranus = createLabel('Uranus', 50);
+        labels.uranus = createLabel('Uranus', 60 / 0.065, 400 / 0.065);
         uranus.add(labels.uranus);
         createOrbitLine(uranusOrbitRadius, 0x4FD8EB);
     });
@@ -528,7 +635,7 @@ function loadNeptuneModel() {
             }
         });
         scene.add(neptune);
-        labels.neptune = createLabel('Neptune', 50);
+        labels.neptune = createLabel('Neptune', 60 / 0.065, 400 / 0.065);
         neptune.add(labels.neptune);
         createOrbitLine(neptuneOrbitRadius, 0x4169E1);
     });
@@ -641,8 +748,18 @@ function animate() {
             neptune.rotation.y += 0.009 * simulationSpeed;
         }
     }
+    if (focusedPlanet) {
+         const sunToPlanet = focusedPlanet.position.clone().normalize();
+         const targetPos = focusedPlanet.position.clone().add(sunToPlanet.multiplyScalar(100)); // Orbit + 100
+         targetPos.y = 30;
+         camera.position.lerp(targetPos, 0.05);
+         camera.lookAt(0, 0, 0); 
+
+        if (controls) {
+            controls.target.set(0, 0, 0);
+            controls.update();
+        }
+    }
     renderer.render(scene, camera);
 }
 document.addEventListener('DOMContentLoaded', init);
-
-
