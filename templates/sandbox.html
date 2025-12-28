@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Galaxias - Sandbox Mode</title>
+    <meta name="description" content="Create your own solar system">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/sandbox.css') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Shabo:wght@400;700;900&family=Korvich:wght@400;700&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <div id="canvas-container"></div>
+    <div class="top-bar">
+        <div class="logo">Galaxias Sandbox</div>
+        <div class="top-controls">
+            <button class="control-btn" id="backBtn">Back</button>
+            <button class="control-btn" id="resetBtn">Reset</button>
+        </div>
+    </div>
+    <div class="left-sidebar">
+        <h3>Add Objects</h3>
+        <div class="object-palette">
+            <button class="palette-btn" data-object="star">Star</button>
+            <button class="palette-btn" data-object="planet">Planet</button>
+            <button class="palette-btn" data-object="moon">Moon</button>
+        </div>
+    </div>
+    <div class="right-sidebar">
+        <h3>Properties</h3>
+        <div class="properties-panel" id="propertiesPanel">
+            <p class="no-selection">Select an object to edit its properties</p>
+        </div>
+    </div>
+    <footer class="github-footer">
+        Checkout <a href="https://github.com/sujalnegi/galaxias" target="_blank" rel="noopener noreferrer">Galaxias</a>
+        at GitHub
+    </footer>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.rawgit.com/mrdoob/three.js/r128/examples/js/loaders/GLTFLoader.js"></script>
+    <script src="https://cdn.rawgit.com/mrdoob/three.js/r128/examples/js/controls/OrbitControls.js"></script>
+    <script src="{{ url_for('static', filename='js/sandbox.js') }}"></script>
+</body>
+
+</html>

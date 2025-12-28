@@ -10,5 +10,9 @@ def home():
 def simulation():
     return render_template('simulation.html')
 
+@app.route('/sandbox')
+def sandbox():
+    return render_template('sandbox.html')
+
 if __name__ == '__main__':
     app.run(debug=True)

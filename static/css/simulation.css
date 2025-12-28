@@ -262,6 +262,30 @@ body {
     min-width: 40px;
 }
 
+.sandbox-nav-btn {
+    position: fixed;
+    top: 30px;
+    right: 30px;
+    padding: 10px 25px;
+    background: rgba(255, 159, 67, 0.2);
+    border: 2px solid rgba(255, 159, 67, 0.6);
+    border-radius: 8px;
+    color: #fff;
+    font-size: 0.9rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+    z-index: 1000;
+}
+
+.sandbox-nav-btn:hover {
+    background: rgba(255, 159, 67, 0.4);
+    border-color: #FFD700;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(255, 159, 67, 0.4);
+}
+
 .scale-slider-container {
     position: fixed;
     left: 30px;

@@ -397,6 +397,27 @@ body {
     }
 }
 
+.sandbox-button {
+    margin-top: 20px;
+    padding: 12px 40px;
+    font-size: 1rem;
+    font-weight: 700;
+    color: #fff;
+    background: rgba(255, 159, 67, 0.2);
+    border: 2px solid rgba(255, 159, 67, 0.6);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+}
+
+.sandbox-button:hover {
+    background: rgba(255, 159, 67, 0.4);
+    border-color: #FFD700;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 20px rgba(255, 159, 67, 0.4);
+}
+
 .gpu-warning-overlay {
     position: fixed;
     top: 0;
