@@ -12,6 +12,7 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Shabo:wght@400;700;900&family=Korvich:wght@400;700&display=swap"
         rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 </head>
 
 <body>
@@ -32,12 +33,19 @@
         <div class="scale-value" id="scaleValue">1.0x</div>
     </div>
     <div class="zoom-controls">
-        <button id="playPauseBtn" class="zoom-btn" data-tooltip="Play/Pause (Space)">||</button>
-        <button id="gridToggleBtn" class="zoom-btn" data-tooltip="Toggle Grid (G)">⊡</button>
-        <button id="orbitToggleBtn" class="zoom-btn" data-tooltip="Toggle Orbits (O)">○</button>
-        <button id="recentreBtn" class="zoom-btn" data-tooltip="Recentre Camera (X)">⊙</button>
-        <button id="zoomInBtn" class="zoom-btn" data-tooltip="Zoom In">+</button>
-        <button id="zoomOutBtn" class="zoom-btn" data-tooltip="Zoom Out">−</button>
+        <button id="playPauseBtn" class="zoom-btn" data-tooltip="Play/Pause (Space)"><span
+                class="material-icons">pause</span></button>
+        <button id="gridToggleBtn" class="zoom-btn" data-tooltip="Toggle Grid (G)"><span
+                class="material-icons">grid_on</span></button>
+        <button id="orbitToggleBtn" class="zoom-btn" data-tooltip="Toggle Orbits (O)"><span
+                class="material-icons">trip_origin</span></button>
+        <button id="recentreBtn" class="zoom-btn" data-tooltip="Recentre Camera (X)"><span
+                class="material-icons">center_focus_strong</span></button>
+        <button id="zoomInBtn" class="zoom-btn" data-tooltip="Zoom In"><span class="material-icons">add</span></button>
+        <button id="zoomOutBtn" class="zoom-btn" data-tooltip="Zoom Out"><span
+                class="material-icons">remove</span></button>
+        <button id="screenshotBtn" class="zoom-btn" data-tooltip="Screenshot"><span
+                class="material-icons">download</span></button>
     </div>
     <div class="planet-size-controls">
         <button id="planetSizeIncreaseBtn" class="size-btn" data-tooltip="Increase Size">+</button>

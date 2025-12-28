@@ -26,7 +26,7 @@ const BASE_ORBIT_RADII = {
 };
 let orbitScaleMultiplier = 1.0;
 let simulationSpeed = 1.0;
-
+let labels = {};
 function init() {
     const container = document.getElementById('canvas-container');
     scene = new THREE.Scene();
@@ -173,6 +173,10 @@ function init() {
         const direction = camera.position.clone().normalize();
         camera.position.add(direction.multiplyScalar(500));
     });
+    const screenshotBtn = document.getElementById('screenshotBtn');
+    screenshotBtn.addEventListener('click', () => {
+        takeScreenshot();
+    });
     window.addEventListener('keydown', (e) => {
         if (e.code === 'Space') {
             e.preventDefault();
@@ -210,18 +214,33 @@ function init() {
     scaleSlider.style.setProperty('--slider-percent', '18.4%');
     animate();
 }
-
+function takeScreenshot() {
+    const uiElements = document.querySelectorAll('.speed-control-bar, .sandbox-nav-btn, .scale-slider-container, .zoom-controls, .planet-size-controls, .github-footer');
+    uiElements.forEach(el => el.style.display = 'none');
+    renderer.render(scene, camera);
+    const canvas = renderer.domElement;
+    canvas.toBlob(blob => {
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `galaxias-${Date.now()}.png`;
+        link.click();
+        URL.revokeObjectURL(url);
+        uiElements.forEach(el => el.style.display = '');
+    });
+}
 function togglePlayPause() {
     isPaused = !isPaused;
     const playPauseBtn = document.getElementById('playPauseBtn');
-    playPauseBtn.textContent = isPaused ? '▶' : '||';
+    const icon = playPauseBtn.querySelector('.material-icons');
+    icon.textContent = isPaused ? 'play_arrow' : 'pause';
 }
-
 function toggleGrid() {
     if (grid) {
         grid.visible = !grid.visible;
         const gridToggleBtn = document.getElementById('gridToggleBtn');
-        gridToggleBtn.textContent = grid.visible ? '⊞' : '⊡';
+        const icon = gridToggleBtn.querySelector('.material-icons');
+        icon.textContent = grid.visible ? 'grid_off' : 'grid_on';
     }
 }
 
@@ -232,7 +251,8 @@ function toggleOrbits() {
     });
     const orbitToggleBtn = document.getElementById('orbitToggleBtn');
     if (orbitToggleBtn) {
-        orbitToggleBtn.textContent = orbitsVisible ? '◯' : '○';
+        const icon = orbitToggleBtn.querySelector('.material-icons');
+        icon.textContent = orbitsVisible ? 'panorama_fish_eye' : 'trip_origin';
     }
 }
 
@@ -259,7 +279,23 @@ function updateOrbitLines() {
     createOrbitLine(BASE_ORBIT_RADII.uranus * orbitScaleMultiplier, 0x4FD8EB);
     createOrbitLine(BASE_ORBIT_RADII.neptune * orbitScaleMultiplier, 0x4169E1);
 }
-
+function createLabel(text, offsetY = 200, scale = 266) {
+    const canvas = document.createElement('canvas');
+    const context = canvas.getContext('2d');
+    canvas.width = 256;
+    canvas.height = 64;
+    context.font = 'Bold 24px Arial';
+    context.fillStyle = '#FFD700';
+    context.textAlign = 'center';
+    context.textBaseline = 'middle';
+    context.fillText(text, canvas.width / 2, canvas.height / 2);
+    const texture = new THREE.CanvasTexture(canvas);
+    const spriteMaterial = new THREE.SpriteMaterial({ map: texture });
+    const sprite = new THREE.Sprite(spriteMaterial);
+    sprite.scale.set(scale, scale / 4, 1);
+    sprite.position.y = offsetY;
+    return sprite;
+}
 function updatePlanetSizes() {
     const baseScales = {
         sun: 100,
@@ -372,6 +408,8 @@ function loadSunModel() {
             }
         });
         scene.add(sun);
+        labels.sun = createLabel('Sun', 20, 60);
+        sun.add(labels.sun);
     });
 }
 
@@ -383,6 +421,8 @@ function loadMercuryModel() {
         mercury.scale.set(0.01, 0.01, 0.01);
         mercury.position.set(mercuryOrbitRadius, 0, 0);
         scene.add(mercury);
+        labels.mercury = createLabel('Mercury', 20);
+        mercury.add(labels.mercury);
         createOrbitLine(mercuryOrbitRadius, 0x8C7853);
     });
 }
@@ -395,6 +435,8 @@ function loadVenusModel() {
         venus.scale.set(5.0, 5.0, 5.0);
         venus.position.set(venusOrbitRadius, 0, 0);
         scene.add(venus);
+        labels.venus = createLabel('Venus', 40);
+        venus.add(labels.venus);
         createOrbitLine(venusOrbitRadius, 0xFFC649);
     });
 }
@@ -407,6 +449,8 @@ function loadEarthModel() {
         earth.scale.set(5.0, 5.0, 5.0);
         earth.position.set(earthOrbitRadius, 0, 0);
         scene.add(earth);
+        labels.earth = createLabel('Earth', 40);
+        earth.add(labels.earth);
         createOrbitLine(earthOrbitRadius, 0x4A90E2);
     });
 }
@@ -419,6 +463,8 @@ function loadMarsModel() {
         mars.scale.set(2.5, 2.5, 2.5);
         mars.position.set(marsOrbitRadius, 0, 0);
         scene.add(mars);
+        labels.mars = createLabel('Mars', 30);
+        mars.add(labels.mars);
         createOrbitLine(marsOrbitRadius, 0xCD5C5C);
     });
 }
@@ -431,6 +477,8 @@ function loadJupiterModel() {
         jupiter.scale.set(0.25, 0.25, 0.25);
         jupiter.position.set(jupiterOrbitRadius, 0, 0);
         scene.add(jupiter);
+        labels.jupiter = createLabel('Jupiter', 70);
+        jupiter.add(labels.jupiter);
         createOrbitLine(jupiterOrbitRadius, 0xFFA500);
     });
 }
@@ -442,6 +490,8 @@ function loadSaturnModel() {
         saturn.scale.set(25.0, 25.0, 25.0);
         saturn.position.set(saturnOrbitRadius, 0, 0);
         scene.add(saturn);
+        labels.saturn = createLabel('Saturn', 60);
+        saturn.add(labels.saturn);
         createOrbitLine(saturnOrbitRadius, 0xDAA520);
     });
 }
@@ -459,6 +509,8 @@ function loadUranusModel() {
             }
         });
         scene.add(uranus);
+        labels.uranus = createLabel('Uranus', 50);
+        uranus.add(labels.uranus);
         createOrbitLine(uranusOrbitRadius, 0x4FD8EB);
     });
 }
@@ -476,6 +528,8 @@ function loadNeptuneModel() {
             }
         });
         scene.add(neptune);
+        labels.neptune = createLabel('Neptune', 50);
+        neptune.add(labels.neptune);
         createOrbitLine(neptuneOrbitRadius, 0x4169E1);
     });
 }
