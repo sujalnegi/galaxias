@@ -49,17 +49,21 @@
     <div class="right-sidebar">
         <h3 class="menu-title">Background Color</h3>
         <div class="color-options">
-            <button class="color-btn" data-color="#FFFFFF"
-                style="background: #FFFFFF; border-color: #999;">White</button>
-            <button class="color-btn" data-color="#000000" style="background: #000000;">Black</button>
-            <button class="color-btn" data-color="#F5F5F5"
-                style="background: #F5F5F5; border-color: #999;">Off-White</button>
-            <button class="color-btn" data-color="#808080" style="background: #808080;">Grey</button>
+            <button class="color-circle" data-color="#FFFFFF" style="background: #FFFFFF; border-color: #999;"
+                title="White"></button>
+            <button class="color-circle" data-color="#000000" style="background: #000000;" title="Black"></button>
+            <button class="color-circle" data-color="#F5F5F5" style="background: #F5F5F5; border-color: #999;"
+                title="Off-White"></button>
+            <button class="color-circle" data-color="#808080" style="background: #808080;" title="Grey"></button>
+            <button class="color-circle custom-color"
+                style="background: linear-gradient(45deg, #ff0000, #00ff00, #0000ff); border-color: #fff;"
+                title="Custom Color" id="customColorBtn">+</button>
         </div>
+        <h3 class="menu-title" style="margin-top: 30px;">Stars</h3>
+        <button class="toggle-btn" id="starToggle">Hide Stars</button>
+        <h3 class="menu-title" style="margin-top: 30px;">Grid</h3>
+        <button class="toggle-btn" id="gridToggle">Show Grid</button>
     </div>
-
-
-
     <footer class="github-footer">
         Checkout <a href="https://github.com/sujalnegi/galaxias" target="_blank" rel="noopener noreferrer">Galaxias</a>
         at GitHub

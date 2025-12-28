@@ -29,6 +29,7 @@ function init() {
     pointLight.position.set(0, 0, 0);
     scene.add(pointLight);
     createStarfield();
+    createGrid();
     window.addEventListener('resize', onWindowResize);
     setupEventListeners();
     animate();
@@ -51,6 +52,14 @@ function createStarfield() {
     const stars = new THREE.Points(starGeometry, starMaterial);
     scene.add(stars);
 }
+let gridHelper;
+function createGrid() {
+    const size = 10000;
+    const divisions = 50;
+    gridHelper = new THREE.GridHelper(size, divisions, 0x444444, 0x222222);
+    gridHelper.visible = false;
+    scene.add(gridHelper);
+}
 function setupEventListeners() {
     const backBtn = document.getElementById('backBtn');
     const resetBtn = document.getElementById('resetBtn');
@@ -72,13 +81,43 @@ function setupEventListeners() {
             console.log(`Adding ${type}: ${name}`);
         });
     });
-    const colorBtns = document.querySelectorAll('.color-btn');
+    const colorBtns = document.querySelectorAll('.color-circle');
     colorBtns.forEach(btn => {
         btn.addEventListener('click', (e) => {
             const color = e.target.dataset.color;
             scene.background = new THREE.Color(color);
         });
     });
+    const starToggle = document.getElementById('starToggle');
+    let starsVisible = true;
+    const starfield = scene.children.find(child => child.type === 'Points');
+    if (starToggle) {
+        starToggle.addEventListener('click', () => {
+            starsVisible = !starsVisible;
+            if (starfield) starfield.visible = starsVisible;
+            starToggle.textContent = starsVisible ? 'Hide Stars' : 'Show Stars';
+        });
+    }
+    const customColorBtn = document.getElementById('customColorBtn');
+    if (customColorBtn) {
+        customColorBtn.addEventListener('click', () => {
+            const hexColor = prompt('Enter a hex color code (e.g., #FF5733):');
+            if (hexColor && /^#[0-9A-F]{6}$/i.test(hexColor)) {
+                scene.background = new THREE.Color(hexColor);
+            } else if (hexColor) {
+                alert('Invalid hex color code. Please use format: #RRGGBB');
+            }
+        });
+    }
+    const gridToggle = document.getElementById('gridToggle');
+    let gridVisible = false;
+    if (gridToggle) {
+        gridToggle.addEventListener('click', () => {
+            gridVisible = !gridVisible;
+            if (gridHelper) gridHelper.visible = gridVisible;
+            gridToggle.textContent = gridVisible ? 'Hide Grid' : 'Show Grid';
+        });
+    }
 }
 function onWindowResize() {
     camera.aspect = window.innerWidth / window.innerHeight;
