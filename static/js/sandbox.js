@@ -79,8 +79,10 @@ function setupEventListeners() {
             const type = e.target.dataset.type;
             const name = e.target.dataset.name;
             console.log(`Adding ${type}: ${name}`);
+            loadModel(name);
         });
     });
+
     const colorBtns = document.querySelectorAll('.color-circle');
     colorBtns.forEach(btn => {
         btn.addEventListener('click', (e) => {
@@ -88,14 +90,38 @@ function setupEventListeners() {
             scene.background = new THREE.Color(color);
         });
     });
+
+    function loadModel(name) {
+        const loader = new THREE.GLTFLoader();
+        const fileName = name.toLowerCase().replace(' ', '_');
+
+        let scale = 1;
+        if (name === 'Sun') scale = 50;
+        else if (name === 'Jupiter' || name === 'Saturn') scale = 10;
+        else if (name === 'Uranus' || name === 'Neptune') scale = 5;
+        else scale = 1;
+
+        loader.load(`/static/assets/${fileName}.glb`, function (gltf) {
+            const model = gltf.scene;
+            model.scale.set(scale, scale, scale);
+            const positionOffset = 500;
+            model.position.set(
+                (Math.random() - 0.5) * positionOffset,
+                0,
+                (Math.random() - 0.5) * positionOffset
+            );
+            scene.add(model);
+            console.log(`Loaded ${name} at`, model.position);
+        }, undefined, function (error) {
+            console.error(`Error loading ${name}:`, error);
+            alert(`Could not load ${name} model.`);
+        });
+    }
     const starToggle = document.getElementById('starToggle');
-    let starsVisible = true;
     const starfield = scene.children.find(child => child.type === 'Points');
     if (starToggle) {
-        starToggle.addEventListener('click', () => {
-            starsVisible = !starsVisible;
-            if (starfield) starfield.visible = starsVisible;
-            starToggle.textContent = starsVisible ? 'Hide Stars' : 'Show Stars';
+        starToggle.addEventListener('change', () => {
+            if (starfield) starfield.visible = starToggle.checked;
         });
     }
     const customColorBtn = document.getElementById('customColorBtn');
@@ -110,12 +136,9 @@ function setupEventListeners() {
         });
     }
     const gridToggle = document.getElementById('gridToggle');
-    let gridVisible = false;
     if (gridToggle) {
-        gridToggle.addEventListener('click', () => {
-            gridVisible = !gridVisible;
-            if (gridHelper) gridHelper.visible = gridVisible;
-            gridToggle.textContent = gridVisible ? 'Hide Grid' : 'Show Grid';
+        gridToggle.addEventListener('change', () => {
+            if (gridHelper) gridHelper.visible = gridToggle.checked;
         });
     }
 }

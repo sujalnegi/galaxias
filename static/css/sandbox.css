@@ -194,6 +194,27 @@ body {
 .toggle-btn:active {
     transform: scale(0.98);
 }
+.checkbox-group {
+    margin-top: 20px;
+}
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    color: #fff;
+    user-select: none;
+}
+.checkbox-label input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+    accent-color: #FF9F43;
+}
+.checkbox-label span {
+    font-weight: 500;
+}
 .github-footer {
     position: fixed;
     bottom: 20px;
