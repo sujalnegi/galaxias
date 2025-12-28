@@ -128,6 +128,10 @@ function init() {
     });
     const scaleSlider = document.getElementById('scaleSlider');
     const scaleValue = document.getElementById('scaleValue');
+    scaleSlider.value = 1;
+    scaleValue.textContent = '1.0x';
+    planetSizeMultiplier = 1.0;
+    orbitScaleMultiplier = 1.0;
     scaleSlider.addEventListener('input', (e) => {
         const sliderValue = parseFloat(e.target.value);
         planetSizeMultiplier = sliderValue;
@@ -140,11 +144,26 @@ function init() {
     });
     const speedSlider = document.getElementById('speedSlider');
     const speedValue = document.getElementById('speedValue');
+    const speedSliderFill = document.getElementById('speedSliderFill');
+
+    speedSlider.value = 1;
+    speedValue.textContent = '1.0x';
+    simulationSpeed = 1.0;
+
+    const sliderWidth = 120;
+    const knobRadius = 8;
+    const initialPercent = ((1.0 - 0.1) / (3.0 - 0.1)) * 100;
+    const initialPixels = (sliderWidth * initialPercent / 100) + knobRadius;
+    speedSliderFill.style.width = initialPixels + 'px';
+
     speedSlider.addEventListener('input', (e) => {
-        simulationSpeed = parseFloat(e.target.value);
-        speedValue.textContent = simulationSpeed.toFixed(1) + 'x';
-        const percent = ((simulationSpeed - 0.1) / (3 - 0.1)) * 100;
-        speedSlider.style.setProperty('--slider-percent', percent + '%');
+        const value = parseFloat(e.target.value);
+        simulationSpeed = value;
+        speedValue.textContent = value.toFixed(1) + 'x';
+
+        const percent = ((value - 0.1) / (3.0 - 0.1)) * 100;
+        const pixels = (sliderWidth * percent / 100) + knobRadius;
+        speedSliderFill.style.width = pixels + 'px';
     });
     zoomInBtn.addEventListener('click', () => {
         const direction = camera.position.clone().normalize();
@@ -189,7 +208,6 @@ function init() {
         }
     });
     scaleSlider.style.setProperty('--slider-percent', '18.4%');
-    speedSlider.style.setProperty('--slider-percent', '31%');
     animate();
 }
 
