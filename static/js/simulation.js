@@ -25,10 +25,10 @@ const BASE_ORBIT_RADII = {
     neptune: 91100
 };
 let orbitScaleMultiplier = 1.0;
-let simulationSpeed = 1.0;
+let simulationSpeed = 0.1;
 let labels = {};
 let labelsVisible = true;
-let focusedPlanet = null; 
+let focusedPlanet = null;
 function init() {
     const container = document.getElementById('canvas-container');
     scene = new THREE.Scene();
@@ -150,22 +150,22 @@ function init() {
     const speedValue = document.getElementById('speedValue');
     const speedSliderFill = document.getElementById('speedSliderFill');
 
-    speedSlider.value = 1;
-    speedValue.textContent = '1.0x';
-    simulationSpeed = 1.0;
+    speedSlider.value = 0.1;
+    speedValue.textContent = '0.1x';
+    simulationSpeed = 0.1;
 
     const sliderWidth = 120;
     const knobRadius = 8;
-    const initialPercent = ((1.0 - 0.1) / (3.0 - 0.1)) * 100;
+    const initialPercent = ((0.1 - 0.01) / (3.0 - 0.01)) * 100;
     const initialPixels = (sliderWidth * initialPercent / 100) + knobRadius;
     speedSliderFill.style.width = initialPixels + 'px';
 
     speedSlider.addEventListener('input', (e) => {
         const value = parseFloat(e.target.value);
         simulationSpeed = value;
-        speedValue.textContent = value.toFixed(1) + 'x';
+        speedValue.textContent = value.toFixed(2) + 'x';
 
-        const percent = ((value - 0.1) / (3.0 - 0.1)) * 100;
+        const percent = ((value - 0.01) / (3.0 - 0.01)) * 100;
         const pixels = (sliderWidth * percent / 100) + knobRadius;
         speedSliderFill.style.width = pixels + 'px';
     });
@@ -286,7 +286,7 @@ function recentreCamera() {
         controls.target.set(0, 0, 0);
         controls.update();
     }
-    focusedPlanet = null; 
+    focusedPlanet = null;
     hideRecentreToast();
 }
 
@@ -528,7 +528,7 @@ function loadMercuryModel() {
         mercury.scale.set(0.01, 0.01, 0.01);
         mercury.position.set(mercuryOrbitRadius, 0, 0);
         scene.add(mercury);
-        labels.mercury = createLabel('Mercury', 60 / 0.01, 400 / 0.01);
+        labels.mercury = createLabel('Mercury', 30 / 0.01, 200 / 0.01);
         mercury.add(labels.mercury);
         createOrbitLine(mercuryOrbitRadius, 0x8C7853);
     });
@@ -542,7 +542,7 @@ function loadVenusModel() {
         venus.scale.set(5.0, 5.0, 5.0);
         venus.position.set(venusOrbitRadius, 0, 0);
         scene.add(venus);
-        labels.venus = createLabel('Venus', 40);
+        labels.venus = createLabel('Venus', 6.5, 44.5);
         venus.add(labels.venus);
         createOrbitLine(venusOrbitRadius, 0xFFC649);
     });
@@ -556,7 +556,7 @@ function loadEarthModel() {
         earth.scale.set(5.0, 5.0, 5.0);
         earth.position.set(earthOrbitRadius, 0, 0);
         scene.add(earth);
-        labels.earth = createLabel('Earth', 40);
+        labels.earth = createLabel('Earth', 5, 25);
         earth.add(labels.earth);
         createOrbitLine(earthOrbitRadius, 0x4A90E2);
     });
@@ -570,7 +570,7 @@ function loadMarsModel() {
         mars.scale.set(2.5, 2.5, 2.5);
         mars.position.set(marsOrbitRadius, 0, 0);
         scene.add(mars);
-        labels.mars = createLabel('Mars', 30);
+        labels.mars = createLabel('Mars', 5, 25);
         mars.add(labels.mars);
         createOrbitLine(marsOrbitRadius, 0xCD5C5C);
     });
@@ -597,7 +597,7 @@ function loadSaturnModel() {
         saturn.scale.set(25.0, 25.0, 25.0);
         saturn.position.set(saturnOrbitRadius, 0, 0);
         scene.add(saturn);
-        labels.saturn = createLabel('Saturn', 60);
+        labels.saturn = createLabel('Saturn', 2, 5);
         saturn.add(labels.saturn);
         createOrbitLine(saturnOrbitRadius, 0xDAA520);
     });
@@ -616,7 +616,7 @@ function loadUranusModel() {
             }
         });
         scene.add(uranus);
-        labels.uranus = createLabel('Uranus', 60 / 0.065, 400 / 0.065);
+        labels.uranus = createLabel('Uranus', 15 / 0.065, 100 / 0.065);
         uranus.add(labels.uranus);
         createOrbitLine(uranusOrbitRadius, 0x4FD8EB);
     });
@@ -635,7 +635,7 @@ function loadNeptuneModel() {
             }
         });
         scene.add(neptune);
-        labels.neptune = createLabel('Neptune', 60 / 0.065, 400 / 0.065);
+        labels.neptune = createLabel('Neptune', 15 / 0.065, 100 / 0.065);
         neptune.add(labels.neptune);
         createOrbitLine(neptuneOrbitRadius, 0x4169E1);
     });
@@ -749,11 +749,11 @@ function animate() {
         }
     }
     if (focusedPlanet) {
-         const sunToPlanet = focusedPlanet.position.clone().normalize();
-         const targetPos = focusedPlanet.position.clone().add(sunToPlanet.multiplyScalar(100)); // Orbit + 100
-         targetPos.y = 30;
-         camera.position.lerp(targetPos, 0.05);
-         camera.lookAt(0, 0, 0); 
+        const sunToPlanet = focusedPlanet.position.clone().normalize();
+        const targetPos = focusedPlanet.position.clone().add(sunToPlanet.multiplyScalar(100)); // Orbit + 100
+        targetPos.y = 30;
+        camera.position.lerp(targetPos, 0.05);
+        camera.lookAt(0, 0, 0);
 
         if (controls) {
             controls.target.set(0, 0, 0);
@@ -763,3 +763,11 @@ function animate() {
     renderer.render(scene, camera);
 }
 document.addEventListener('DOMContentLoaded', init);
+
+
+/*
+
+decrease the label size and position of venus by 3
+ not really working 
+ khane 
+*/ 
