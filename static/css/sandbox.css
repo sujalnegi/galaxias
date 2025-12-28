@@ -34,8 +34,8 @@ body {
 }
 
 .logo {
-    font-family: 'Shabo', sans-serif;
-    font-size: 1.8rem;
+    font-family: 'Comic Sans MS', 'Comic Sans', cursive;
+    font-size: 2.5rem;
     font-weight: 900;
     background: linear-gradient(135deg, #FF9F43 0%, #FFD700 100%);
     -webkit-background-clip: text;

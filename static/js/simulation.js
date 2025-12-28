@@ -29,6 +29,27 @@ let simulationSpeed = 0.1;
 let labels = {};
 let labelsVisible = true;
 let focusedPlanet = null;
+let loadingProgress = 0;
+let totalAssets = 9;
+let loadedAssets = 0;
+
+function updateLoadingProgress() {
+    loadedAssets++;
+    loadingProgress = Math.floor((loadedAssets / totalAssets) * 100);
+    const loadingFill = document.getElementById('loadingFill');
+    const loadingPercentage = document.getElementById('loadingPercentage');
+    if (loadingFill) loadingFill.style.width = loadingProgress + '%';
+    if (loadingPercentage) loadingPercentage.textContent = loadingProgress + '%';
+    if (loadedAssets >= totalAssets) {
+        setTimeout(() => {
+            const loadingScreen = document.getElementById('loading-screen');
+            if (loadingScreen) {
+                loadingScreen.classList.add('hidden');
+                setTimeout(() => loadingScreen.remove(), 500);
+            }
+        }, 500);
+    }
+}
 function init() {
     const container = document.getElementById('canvas-container');
     scene = new THREE.Scene();
@@ -517,6 +538,7 @@ function loadSunModel() {
         scene.add(sun);
         labels.sun = createLabel('Sun', 20, 60);
         sun.add(labels.sun);
+        updateLoadingProgress();
     });
 }
 
@@ -531,6 +553,7 @@ function loadMercuryModel() {
         labels.mercury = createLabel('Mercury', 30 / 0.01, 200 / 0.01);
         mercury.add(labels.mercury);
         createOrbitLine(mercuryOrbitRadius, 0x8C7853);
+        updateLoadingProgress();
     });
 }
 
@@ -545,6 +568,7 @@ function loadVenusModel() {
         labels.venus = createLabel('Venus', 6.5, 44.5);
         venus.add(labels.venus);
         createOrbitLine(venusOrbitRadius, 0xFFC649);
+        updateLoadingProgress();
     });
 }
 
@@ -559,6 +583,7 @@ function loadEarthModel() {
         labels.earth = createLabel('Earth', 5, 25);
         earth.add(labels.earth);
         createOrbitLine(earthOrbitRadius, 0x4A90E2);
+        updateLoadingProgress();
     });
 }
 
@@ -573,6 +598,7 @@ function loadMarsModel() {
         labels.mars = createLabel('Mars', 5, 25);
         mars.add(labels.mars);
         createOrbitLine(marsOrbitRadius, 0xCD5C5C);
+        updateLoadingProgress();
     });
 }
 
@@ -587,6 +613,7 @@ function loadJupiterModel() {
         labels.jupiter = createLabel('Jupiter', 60 / 0.25, 400 / 0.25);
         jupiter.add(labels.jupiter);
         createOrbitLine(jupiterOrbitRadius, 0xFFA500);
+        updateLoadingProgress();
     });
 }
 function loadSaturnModel() {
@@ -600,6 +627,7 @@ function loadSaturnModel() {
         labels.saturn = createLabel('Saturn', 2, 5);
         saturn.add(labels.saturn);
         createOrbitLine(saturnOrbitRadius, 0xDAA520);
+        updateLoadingProgress();
     });
 }
 function loadUranusModel() {
@@ -619,6 +647,7 @@ function loadUranusModel() {
         labels.uranus = createLabel('Uranus', 15 / 0.065, 100 / 0.065);
         uranus.add(labels.uranus);
         createOrbitLine(uranusOrbitRadius, 0x4FD8EB);
+        updateLoadingProgress();
     });
 }
 function loadNeptuneModel() {
@@ -638,6 +667,7 @@ function loadNeptuneModel() {
         labels.neptune = createLabel('Neptune', 15 / 0.065, 100 / 0.065);
         neptune.add(labels.neptune);
         createOrbitLine(neptuneOrbitRadius, 0x4169E1);
+        updateLoadingProgress();
     });
 }
 function createOrbitLine(radius, color) {
