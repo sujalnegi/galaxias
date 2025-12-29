@@ -141,28 +141,40 @@ function setupEventListeners() {
 
 
         loader.load(`/static/assets/${fileName}.glb`, function (gltf) {
-            const model = gltf.scene;
-            const tempBox = new THREE.Box3().setFromObject(model);
-            const tempSize = new THREE.Vector3();
-            tempBox.getSize(tempSize);
-            const maxDim = Math.max(tempSize.x, tempSize.y, tempSize.z);
-            const targetSize = 500;
+            const rawModel = gltf.scene;
 
+            const box = new THREE.Box3().setFromObject(rawModel);
+            const center = box.getCenter(new THREE.Vector3());
+            const size = box.getSize(new THREE.Vector3());
+
+            rawModel.position.x -= center.x;
+            rawModel.position.y -= center.y;
+            rawModel.position.z -= center.z;
+
+            const modelWrapper = new THREE.Group();
+            modelWrapper.add(rawModel);
+            const maxDim = Math.max(size.x, size.y, size.z);
+            const targetSize = 500;
             if (maxDim > 0) {
                 const scaleFactor = targetSize / maxDim;
-                model.scale.set(scaleFactor, scaleFactor, scaleFactor);
+                modelWrapper.scale.set(scaleFactor, scaleFactor, scaleFactor);
             }
 
-            const box = new THREE.Box3().setFromObject(model);
-            const size = new THREE.Vector3();
-            box.getSize(size);
-            const radius = Math.max(size.x, size.z) / 2;
-            model.userData.radius = radius;
+            const dimX = size.x * modelWrapper.scale.x;
+            const dimZ = size.z * modelWrapper.scale.z;
+            const radius = Math.max(dimX, dimZ) / 2;
+
+            modelWrapper.userData.name = name;
+            modelWrapper.userData.isSelectable = true;
+            modelWrapper.userData.originalScale = modelWrapper.scale.clone();
+            modelWrapper.userData.radius = radius;
+            modelWrapper.userData.isSpinning = false; 
 
             const positionOffset = 3000;
             let validPosition = false;
             let attempts = 0;
             const maxAttempts = 100;
+            let finalX = 0, finalZ = 0;
 
             while (!validPosition && attempts < maxAttempts) {
                 const x = (Math.random() - 0.5) * positionOffset;
@@ -170,7 +182,7 @@ function setupEventListeners() {
 
                 validPosition = true;
                 scene.children.forEach(child => {
-                    if (child.userData.isSelectable && child !== model) {
+                    if (child.userData.isSelectable && child !== modelWrapper) {
                         const dist = Math.sqrt(Math.pow(child.position.x - x, 2) + Math.pow(child.position.z - z, 2));
                         const minDistance = radius + (child.userData.radius || 0) + 50;
                         if (dist < minDistance) {
@@ -178,28 +190,21 @@ function setupEventListeners() {
                         }
                     }
                 });
+
                 if (validPosition) {
-                    model.position.set(x, 0, z);
+                    finalX = x;
+                    finalZ = z;
                 }
                 attempts++;
             }
-            if (!validPosition) {
-                console.warn('Could not find free space for object. You have filled too much of space');
-                model.position.set(
-                    (Math.random() - 0.5) * positionOffset * 1.5,
-                    0,
-                    (Math.random() - 0.5) * positionOffset * 1.5
-                );
-            }
 
-            model.userData.isSelectable = true;
-            model.userData.name = name;
+            modelWrapper.position.set(finalX, 0, finalZ);
+            scene.add(modelWrapper);
+            console.log(`Loaded ${name} at`, modelWrapper.position);
+            selectObject(modelWrapper);
 
-            scene.add(model);
-            console.log(`Loaded ${name} at`, model.position);
-            selectObject(model);
         }, undefined, function (error) {
-            console.error(`Error loading ${name}:`, error);
+            console.error('An error occurred loading the model:', error);
             alert(`Could not load ${name} model.`);
         });
     }
@@ -382,7 +387,26 @@ function setupEventListeners() {
             }
         });
     }
+    const spinBtn = document.getElementById('spinBtn');
+    const spinAllBtn = document.getElementById('spinAllBtn');
 
+    if (spinBtn) {
+        spinBtn.addEventListener('click', () => {
+            if (selectedObject) {
+                selectedObject.userData.isSpinning = !selectedObject.userData.isSpinning;
+                updateSpinButtonsState();
+            } else {
+                alert('Select an object to spin');
+            }
+        });
+    }
+
+    if (spinAllBtn) {
+        spinAllBtn.addEventListener('click', () => {
+            isGlobalSpinning = !isGlobalSpinning;
+            updateSpinButtonsState();
+        });
+    }
     window.addEventListener('keydown', (e) => {
         const key = e.key.toLowerCase();
         if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
@@ -544,6 +568,7 @@ function deselectObject() {
     }
     selectedObject = null;
     updatePropertiesPanel();
+    updateSpinButtonsState();
 }
 function selectObject(object) {
     if (selectedObject) {
@@ -559,6 +584,7 @@ function selectObject(object) {
     if (propTabBtn) propTabBtn.click();
 
     updatePropertiesPanel();
+    updateSpinButtonsState();
 }
 
 function updatePropertiesPanel() {
@@ -649,8 +675,45 @@ function onMouseClick(event) {
     }
     deselectObject();
 }
+
+let isGlobalSpinning = false;
+
+function updateSpinButtonsState() {
+    const spinBtn = document.getElementById('spinBtn');
+    const spinAllBtn = document.getElementById('spinAllBtn');
+
+    if (spinBtn) {
+        if (selectedObject && selectedObject.userData.isSpinning) {
+            spinBtn.classList.add('active');
+            spinBtn.style.borderColor = '#FF9F43';
+        } else {
+            spinBtn.classList.remove('active');
+            spinBtn.style.borderColor = 'rgba(255, 255, 255, 0.2)';
+        }
+    }
+    if (spinAllBtn) {
+        if (isGlobalSpinning) {
+            spinAllBtn.classList.add('active');
+            spinAllBtn.style.borderColor = '#FF9F43';
+        } else {
+            spinAllBtn.classList.remove('active');
+            spinAllBtn.style.borderColor = 'rgba(255, 255, 255, 0.2)';
+        }
+    }
+}
+
 function animate() {
     requestAnimationFrame(animate);
+
+    scene.children.forEach(child => {
+        if ((child.userData.isSelectable && isGlobalSpinning) || child.userData.isSpinning) {
+            child.rotation.y += 0.01;
+            if (selectedObject === child && selectionHelper) {
+                selectionHelper.update();
+            }
+        }
+    });
+
     controls.update();
     renderer.render(scene, camera);
 }

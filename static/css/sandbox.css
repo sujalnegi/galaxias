@@ -611,10 +611,30 @@ body {
     border: 2px solid #FF9F43;
     color: #fff;
     box-shadow: 0 0 8px rgba(255, 159, 67, 0.5), inset 0 0 5px rgba(255, 159, 67, 0.2);
+    text-shadow: none;
 }
 
-.icon-toggle-btn.active .material-icons {
-    text-shadow: none;
+.property-actions-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.property-actions-grid .icon-toggle-btn {
+    height: auto;
+    min-height: 80px;
+}
+
+.icon-toggle-btn.delete-btn {
+    background: transparent;
+    border: 2px solid #ff4d4d;
+    color: #ff4d4d;
+}
+
+.icon-toggle-btn.delete-btn:hover {
+    background: rgba(255, 77, 77, 0.1);
+    box-shadow: 0 0 10px rgba(255, 77, 77, 0.4);
 }
 
 .modal {
