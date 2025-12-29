@@ -736,7 +736,7 @@ body {
     top: 0;
     left: 50%;
     transform: translateX(-50%);
-    width: 420px;
+    width: 840px;
     background: rgba(0, 0, 0, 0.9);
     border: 2px solid rgba(255, 159, 67, 0.4);
     border-top: none;

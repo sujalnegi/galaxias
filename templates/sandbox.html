@@ -35,7 +35,7 @@
         </div>
     </div>
 
-    <div class="top-sidebar" id="topSidebar">
+    <div class="top-sidebar collapsed" id="topSidebar">
         <div class="menu-section">
             <h3 class="menu-title controls-title">Controls</h3>
 
@@ -43,27 +43,27 @@
                 style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-top: 20px; width: 100%;">
                 <div class="control-visual-item"
                     style="display: flex; flex-direction: column; align-items: center; text-align: center;">
-                    <img src="" alt="Rotate Control"
-                        style="width: 50px; height: 50px; object-fit: contain; margin-bottom: 5px; filter: invert(1);">
-                    <span style="font-size: 0.7rem; color: rgba(255,255,255,0.7);">Left Click: Rotate</span>
+                    <img src="{{ url_for('static', filename='assets/leftclick.png') }}" alt="Rotate Control"
+                        style="width: 100px; height: 100px; object-fit: cover; object-position: center; margin-bottom: 10px; filter: invert(1);">
+                    <span style="font-size: 1rem; color: rgba(255,255,255,0.7);">Left Click: Rotate</span>
                 </div>
                 <div class="control-visual-item"
                     style="display: flex; flex-direction: column; align-items: center; text-align: center;">
-                    <img src="" alt="Pan Control"
-                        style="width: 50px; height: 50px; object-fit: contain; margin-bottom: 5px; filter: invert(1);">
-                    <span style="font-size: 0.7rem; color: rgba(255,255,255,0.7);">Right Click: Pan</span>
+                    <img src="{{ url_for('static', filename='assets/rightclick.png') }}" alt="Pan Control"
+                        style="width: 100px; height: 100px; object-fit: cover; object-position: center; margin-bottom: 10px; filter: invert(1);">
+                    <span style="font-size: 1rem; color: rgba(255,255,255,0.7);">Right Click: Pan</span>
                 </div>
                 <div class="control-visual-item"
                     style="display: flex; flex-direction: column; align-items: center; text-align: center;">
-                    <img src="" alt="Zoom Control"
-                        style="width: 50px; height: 50px; object-fit: contain; margin-bottom: 5px; filter: invert(1);">
-                    <span style="font-size: 0.7rem; color: rgba(255,255,255,0.7);">Scroll: Zoom</span>
+                    <img src="{{ url_for('static', filename='assets/scrollwheel.png') }}" alt="Zoom Control"
+                        style="width: 100px; height: 100px; object-fit: cover; object-position: center; margin-bottom: 10px; filter: invert(1);">
+                    <span style="font-size: 1rem; color: rgba(255,255,255,0.7);">Scroll: Zoom</span>
                 </div>
                 <div class="control-visual-item"
                     style="display: flex; flex-direction: column; align-items: center; text-align: center;">
-                    <span class="material-icons"
-                        style="font-size: 50px; color: #fff; margin-bottom: 5px;">keyboard</span>
-                    <span style="font-size: 0.7rem; color: rgba(255,255,255,0.7);">Space: Puse</span>
+                    <img src="{{ url_for('static', filename='assets/space.png') }}" alt="Pause Control"
+                        style="width: 100px; height: 100px; object-fit: cover; object-position: center; margin-bottom: 10px; filter: invert(1);">
+                    <span style="font-size: 1rem; color: rgba(255,255,255,0.7);">Space: Pause</span>
                 </div>
             </div>
         </div>
