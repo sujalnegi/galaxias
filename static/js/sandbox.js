@@ -294,31 +294,31 @@ function setupEventListeners() {
     function toggleAllVisibility() {
         const leftSidebar = document.getElementById('leftSidebar');
         const rightSidebar = document.getElementById('rightSidebar');
+        const topSidebar = document.getElementById('topSidebar');
         const icon = hideAllBtn.querySelector('.material-icons');
-        const isLeftVisible = !leftSidebar.classList.contains('collapsed');
-        const isRightVisible = !rightSidebar.classList.contains('collapsed');
-
-        if (isLeftVisible || isRightVisible) {
+        if (allVisible) {
             leftSidebar.classList.add('collapsed');
             rightSidebar.classList.add('collapsed');
-            const leftToggleIcon = document.querySelector('#leftToggle i');
-            if (leftToggleIcon) leftToggleIcon.className = 'fas fa-chevron-right';
-            const rightToggleIcon = document.querySelector('#rightToggle i');
-            if (rightToggleIcon) rightToggleIcon.className = 'fas fa-chevron-left';
+            if (topSidebar) topSidebar.classList.add('collapsed');
 
-            hideAllBtn.classList.remove('active');
             icon.textContent = 'visibility_off';
+            hideAllBtn.classList.add('active');
+            allVisible = false;
         } else {
             leftSidebar.classList.remove('collapsed');
             rightSidebar.classList.remove('collapsed');
+            if (topSidebar) topSidebar.classList.remove('collapsed');
 
-            const leftToggleIcon = document.querySelector('#leftToggle i');
-            if (leftToggleIcon) leftToggleIcon.className = 'fas fa-chevron-left';
-            const rightToggleIcon = document.querySelector('#rightToggle i');
-            if (rightToggleIcon) rightToggleIcon.className = 'fas fa-chevron-right';
-            hideAllBtn.classList.add('active');
             icon.textContent = 'visibility';
+            hideAllBtn.classList.remove('active');
+            allVisible = true;
         }
+
+        const leftToggleIcon = document.querySelector('#leftToggle i');
+        if (leftToggleIcon) leftToggleIcon.className = leftSidebar.classList.contains('collapsed') ? 'fas fa-chevron-right' : 'fas fa-chevron-left';
+
+        const rightToggleIcon = document.querySelector('#rightToggle i');
+        if (rightToggleIcon) rightToggleIcon.className = rightSidebar.classList.contains('collapsed') ? 'fas fa-chevron-left' : 'fas fa-chevron-right';
     }
 
     if (hideAllBtn) {
@@ -430,6 +430,29 @@ function setupEventListeners() {
             updateSpinAndOrbitButtonsState();
         });
     }
+
+    const centerObjBtn = document.getElementById('centerObjBtn');
+    if (centerObjBtn) {
+        centerObjBtn.addEventListener('click', () => {
+            if (selectedObject) {
+
+                selectedObject.position.set(0, 0, 0);
+                updatePropertiesPanel();
+                if (selectionHelper) selectionHelper.update();
+            } else {
+                alert('Select an object to center');
+            }
+        });
+    }
+
+    const topToggle = document.getElementById('topToggle');
+    const topSidebar = document.getElementById('topSidebar');
+    if (topToggle && topSidebar) {
+        topToggle.addEventListener('click', () => {
+            topSidebar.classList.toggle('collapsed');
+        });
+    }
+
     window.addEventListener('keydown', (e) => {
         const key = e.key.toLowerCase();
         if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
@@ -573,6 +596,15 @@ function setupEventListeners() {
         deleteBtn.addEventListener('click', deleteSelectedObject);
     }
 
+    const globalSpeedRange = document.getElementById('globalSpeedRange');
+    const globalSpeedValue = document.getElementById('globalSpeedValue');
+    if (globalSpeedRange) {
+        globalSpeedRange.addEventListener('input', function () {
+            globalAnimationSpeed = parseFloat(this.value);
+            if (globalSpeedValue) globalSpeedValue.textContent = globalAnimationSpeed.toFixed(2);
+        });
+    }
+
 }
 function onWindowResize() {
     camera.aspect = window.innerWidth / window.innerHeight;
@@ -639,7 +671,7 @@ function updatePropertiesPanel() {
         const speedValue = document.getElementById('propSpeedValue');
         if (speedRange) {
             speedRange.value = selectedObject.userData.animationSpeed || 1.0;
-            if (speedValue) speedValue.textContent = (selectedObject.userData.animationSpeed || 1.0).toFixed(1);
+            if (speedValue) speedValue.textContent = (selectedObject.userData.animationSpeed || 1.0).toFixed(2);
         }
 
     } else {
@@ -680,7 +712,7 @@ function updateSelectedObjectProperties() {
     if (speedRange && this && this.id === 'propSpeedRange') {
         const speed = parseFloat(speedRange.value);
         selectedObject.userData.animationSpeed = speed;
-        if (speedValue) speedValue.textContent = speed.toFixed(1);
+        if (speedValue) speedValue.textContent = speed.toFixed(2);
     }
 
     if (selectionHelper) selectionHelper.update();
@@ -720,6 +752,7 @@ function onMouseClick(event) {
 let isGlobalSpinning = false;
 let isGlobalOrbiting = false;
 let isPaused = false;
+let globalAnimationSpeed = 1.0;
 
 function updateSpinAndOrbitButtonsState() {
     const spinBtn = document.getElementById('spinBtn');
@@ -770,7 +803,7 @@ function animate() {
 
     if (!isPaused) {
         scene.children.forEach(child => {
-            const animSpeed = child.userData.animationSpeed || 1.0;
+            const animSpeed = (child.userData.animationSpeed || 1.0) * globalAnimationSpeed;
             if ((child.userData.isSelectable && isGlobalSpinning) || child.userData.isSpinning) {
                 child.rotation.y += 0.01 * animSpeed;
             }
