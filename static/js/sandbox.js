@@ -168,7 +168,10 @@ function setupEventListeners() {
             modelWrapper.userData.isSelectable = true;
             modelWrapper.userData.originalScale = modelWrapper.scale.clone();
             modelWrapper.userData.radius = radius;
-            modelWrapper.userData.isSpinning = false; 
+            modelWrapper.userData.isSpinning = false;
+            modelWrapper.userData.isSpinning = false;
+            modelWrapper.userData.isOrbiting = false;
+            modelWrapper.userData.animationSpeed = 1.0;
 
             const positionOffset = 3000;
             let validPosition = false;
@@ -394,7 +397,7 @@ function setupEventListeners() {
         spinBtn.addEventListener('click', () => {
             if (selectedObject) {
                 selectedObject.userData.isSpinning = !selectedObject.userData.isSpinning;
-                updateSpinButtonsState();
+                updateSpinAndOrbitButtonsState();
             } else {
                 alert('Select an object to spin');
             }
@@ -404,7 +407,27 @@ function setupEventListeners() {
     if (spinAllBtn) {
         spinAllBtn.addEventListener('click', () => {
             isGlobalSpinning = !isGlobalSpinning;
-            updateSpinButtonsState();
+            updateSpinAndOrbitButtonsState();
+        });
+    }
+    const orbitBtn = document.getElementById('orbitBtn');
+    const orbitAllBtn = document.getElementById('orbitAllBtn');
+
+    if (orbitBtn) {
+        orbitBtn.addEventListener('click', () => {
+            if (selectedObject) {
+                selectedObject.userData.isOrbiting = !selectedObject.userData.isOrbiting;
+                updateSpinAndOrbitButtonsState();
+            } else {
+                alert('Select an object to orbit');
+            }
+        });
+    }
+
+    if (orbitAllBtn) {
+        orbitAllBtn.addEventListener('click', () => {
+            isGlobalOrbiting = !isGlobalOrbiting;
+            updateSpinAndOrbitButtonsState();
         });
     }
     window.addEventListener('keydown', (e) => {
@@ -418,6 +441,8 @@ function setupEventListeners() {
             if (starToggleBtn) starToggleBtn.click();
         } else if (key === 'delete' || key === 'backspace' || key === 'd') {
             if (selectedObject) deleteSelectedObject();
+        } else if (key === ' ') {
+            isPaused = !isPaused;
         } else if (key === 'x') {
             resetCamera();
         }
@@ -535,7 +560,7 @@ function setupEventListeners() {
             movementFrameId = null;
         }
     }
-    const propInputs = ['propX', 'propY', 'propZ', 'propScale', 'propScaleRange'];
+    const propInputs = ['propX', 'propY', 'propZ', 'propScale', 'propScaleRange', 'propSpeedRange'];
     propInputs.forEach(id => {
         const input = document.getElementById(id);
         if (input) {
@@ -568,7 +593,7 @@ function deselectObject() {
     }
     selectedObject = null;
     updatePropertiesPanel();
-    updateSpinButtonsState();
+    updateSpinAndOrbitButtonsState();
 }
 function selectObject(object) {
     if (selectedObject) {
@@ -584,7 +609,7 @@ function selectObject(object) {
     if (propTabBtn) propTabBtn.click();
 
     updatePropertiesPanel();
-    updateSpinButtonsState();
+    updateSpinAndOrbitButtonsState();
 }
 
 function updatePropertiesPanel() {
@@ -608,6 +633,13 @@ function updatePropertiesPanel() {
             scaleEl.value = selectedObject.scale.x;
             const rangeEl = document.getElementById('propScaleRange');
             if (rangeEl) rangeEl.value = selectedObject.scale.x;
+            if (rangeEl) rangeEl.value = selectedObject.scale.x;
+        }
+        const speedRange = document.getElementById('propSpeedRange');
+        const speedValue = document.getElementById('propSpeedValue');
+        if (speedRange) {
+            speedRange.value = selectedObject.userData.animationSpeed || 1.0;
+            if (speedValue) speedValue.textContent = (selectedObject.userData.animationSpeed || 1.0).toFixed(1);
         }
 
     } else {
@@ -633,6 +665,7 @@ function updateSelectedObjectProperties() {
     if (scaleEl) {
         let scale = parseFloat(scaleEl.value) || 1;
         const rangeEl = document.getElementById('propScaleRange');
+
         if (this && this.id === 'propScaleRange') {
             scale = parseFloat(this.value);
             scaleEl.value = scale;
@@ -642,6 +675,14 @@ function updateSelectedObjectProperties() {
 
         selectedObject.scale.set(scale, scale, scale);
     }
+    const speedRange = document.getElementById('propSpeedRange');
+    const speedValue = document.getElementById('propSpeedValue');
+    if (speedRange && this && this.id === 'propSpeedRange') {
+        const speed = parseFloat(speedRange.value);
+        selectedObject.userData.animationSpeed = speed;
+        if (speedValue) speedValue.textContent = speed.toFixed(1);
+    }
+
     if (selectionHelper) selectionHelper.update();
 }
 
@@ -677,11 +718,14 @@ function onMouseClick(event) {
 }
 
 let isGlobalSpinning = false;
+let isGlobalOrbiting = false;
+let isPaused = false;
 
-function updateSpinButtonsState() {
+function updateSpinAndOrbitButtonsState() {
     const spinBtn = document.getElementById('spinBtn');
     const spinAllBtn = document.getElementById('spinAllBtn');
-
+    const orbitBtn = document.getElementById('orbitBtn');
+    const orbitAllBtn = document.getElementById('orbitAllBtn');
     if (spinBtn) {
         if (selectedObject && selectedObject.userData.isSpinning) {
             spinBtn.classList.add('active');
@@ -700,19 +744,52 @@ function updateSpinButtonsState() {
             spinAllBtn.style.borderColor = 'rgba(255, 255, 255, 0.2)';
         }
     }
+
+    if (orbitBtn) {
+        if (selectedObject && selectedObject.userData.isOrbiting) {
+            orbitBtn.classList.add('active');
+            orbitBtn.style.borderColor = '#FF9F43';
+        } else {
+            orbitBtn.classList.remove('active');
+            orbitBtn.style.borderColor = 'rgba(255, 255, 255, 0.2)';
+        }
+    }
+    if (orbitAllBtn) {
+        if (isGlobalOrbiting) {
+            orbitAllBtn.classList.add('active');
+            orbitAllBtn.style.borderColor = '#FF9F43';
+        } else {
+            orbitAllBtn.classList.remove('active');
+            orbitAllBtn.style.borderColor = 'rgba(255, 255, 255, 0.2)';
+        }
+    }
 }
 
 function animate() {
     requestAnimationFrame(animate);
 
-    scene.children.forEach(child => {
-        if ((child.userData.isSelectable && isGlobalSpinning) || child.userData.isSpinning) {
-            child.rotation.y += 0.01;
+    if (!isPaused) {
+        scene.children.forEach(child => {
+            const animSpeed = child.userData.animationSpeed || 1.0;
+            if ((child.userData.isSelectable && isGlobalSpinning) || child.userData.isSpinning) {
+                child.rotation.y += 0.01 * animSpeed;
+            }
+
+            if ((child.userData.isSelectable && isGlobalOrbiting) || child.userData.isOrbiting) {
+                const baseSpeed = 0.005;
+                const speed = baseSpeed * animSpeed;
+                const x = child.position.x;
+                const z = child.position.z;
+
+                child.position.x = x * Math.cos(speed) - z * Math.sin(speed);
+                child.position.z = x * Math.sin(speed) + z * Math.cos(speed);
+            }
+
             if (selectedObject === child && selectionHelper) {
                 selectionHelper.update();
             }
-        }
-    });
+        });
+    }
 
     controls.update();
     renderer.render(scene, camera);

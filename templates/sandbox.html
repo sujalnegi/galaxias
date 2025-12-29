@@ -111,6 +111,10 @@
                         <span class="material-icons">autorenew</span>
                         <span>Spin All</span>
                     </button>
+                    <button class="icon-toggle-btn" id="orbitAllBtn" title="Orbit All Objects">
+                        <span class="material-icons">public</span>
+                        <span>Orbit All</span>
+                    </button>
                 </div>
             </div>
 
@@ -148,6 +152,14 @@
                                     style="width: 60px;">
                             </div>
                         </div>
+                        <div class="property-item">
+                            <label>Speed</label>
+                            <div class="scale-control">
+                                <input type="range" id="propSpeedRange" min="0" max="100" step="1" class="styled-range">
+                                <span id="propSpeedValue"
+                                    style="width: 40px; text-align: right; color: rgba(255,255,255,0.7);">1.0</span>
+                            </div>
+                        </div>
                         <div class="property-actions-grid">
                             <button class="icon-toggle-btn delete-btn" id="deleteBtn" title="Delete Object (D)">
                                 <span class="material-icons">delete</span>
@@ -156,6 +168,10 @@
                             <button class="icon-toggle-btn" id="spinBtn" title="Spin Selected Object (R)">
                                 <span class="material-icons">rotate_right</span>
                                 <span>Spin</span>
+                            </button>
+                            <button class="icon-toggle-btn" id="orbitBtn" title="Orbit Selected Object">
+                                <span class="material-icons">sync</span>
+                                <span>Orbit</span>
                             </button>
                         </div>
                     </div>
