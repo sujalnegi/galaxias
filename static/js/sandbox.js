@@ -3,7 +3,7 @@ function init() {
     const container = document.getElementById('canvas-container');
 
     scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x000000);
+    scene.background = new THREE.Color(0xF5F5F5);
 
     camera = new THREE.PerspectiveCamera(
         75,
@@ -54,10 +54,10 @@ function createStarfield() {
 }
 let gridHelper;
 function createGrid() {
-    const size = 10000;
-    const divisions = 50;
+    const size = 20000;
+    const divisions = 100;
     gridHelper = new THREE.GridHelper(size, divisions, 0x444444, 0x222222);
-    gridHelper.visible = false;
+    gridHelper.visible = true;
     scene.add(gridHelper);
 }
 function setupEventListeners() {
@@ -97,6 +97,7 @@ function setupEventListeners() {
 
         let scale = 1;
         if (name === 'Sun') scale = 50;
+        else if (name === 'Dwarf Star') scale = 25;
         else if (name === 'Jupiter' || name === 'Saturn') scale = 10;
         else if (name === 'Uranus' || name === 'Neptune') scale = 5;
         else scale = 1;
@@ -139,6 +140,36 @@ function setupEventListeners() {
     if (gridToggle) {
         gridToggle.addEventListener('change', () => {
             if (gridHelper) gridHelper.visible = gridToggle.checked;
+        });
+    }
+
+    const leftSidebar = document.getElementById('leftSidebar');
+    const leftToggle = document.getElementById('leftToggle');
+    if (leftToggle && leftSidebar) {
+        leftToggle.addEventListener('click', () => {
+            leftSidebar.classList.toggle('collapsed');
+            const isCollapsed = leftSidebar.classList.contains('collapsed');
+            const icon = leftToggle.querySelector('i');
+            if (isCollapsed) {
+                icon.className = 'fas fa-chevron-right';
+            } else {
+                icon.className = 'fas fa-chevron-left';
+            }
+        });
+    }
+
+    const rightSidebar = document.getElementById('rightSidebar');
+    const rightToggle = document.getElementById('rightToggle');
+    if (rightToggle && rightSidebar) {
+        rightToggle.addEventListener('click', () => {
+            rightSidebar.classList.toggle('collapsed');
+            const isCollapsed = rightSidebar.classList.contains('collapsed');
+            const icon = rightToggle.querySelector('i');
+            if (isCollapsed) {
+                icon.className = 'fas fa-chevron-left';
+            } else {
+                icon.className = 'fas fa-chevron-right';
+            }
         });
     }
 }

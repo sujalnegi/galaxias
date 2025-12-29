@@ -9,9 +9,9 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/sandbox.css') }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Shabo:wght@400;700;900&family=Korvich:wght@400;700&display=swap"
-        rel="stylesheet">
+    href="https://fonts.googleapis.com/css2?family=Shabo:wght@400;700;900&family=Korvich:wght@400;700&display=swap"
+    rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 
 <body>
@@ -23,54 +23,62 @@
             <button class="control-btn" id="resetBtn">Reset</button>
         </div>
     </div>
-    <div class="sidebar-menu">
-        <div class="menu-section">
-            <h3 class="menu-title">Planets</h3>
-            <div class="menu-items">
-                <button class="menu-item" data-type="planet" data-name="Mercury">Mercury</button>
-                <button class="menu-item" data-type="planet" data-name="Venus">Venus</button>
-                <button class="menu-item" data-type="planet" data-name="Earth">Earth</button>
-                <button class="menu-item" data-type="planet" data-name="Mars">Mars</button>
-                <button class="menu-item" data-type="planet" data-name="Jupiter">Jupiter</button>
-                <button class="menu-item" data-type="planet" data-name="Saturn">Saturn</button>
-                <button class="menu-item" data-type="planet" data-name="Uranus">Uranus</button>
-                <button class="menu-item" data-type="planet" data-name="Neptune">Neptune</button>
+    <div class="sidebar-menu" id="leftSidebar">
+        <div class="sidebar-content">
+            <div class="menu-section">
+                <h3 class="menu-title">Planets</h3>
+                <div class="menu-items">
+                    <button class="menu-item" data-type="planet" data-name="Mercury">Mercury</button>
+                    <button class="menu-item" data-type="planet" data-name="Venus">Venus</button>
+                    <button class="menu-item" data-type="planet" data-name="Earth">Earth</button>
+                    <button class="menu-item" data-type="planet" data-name="Mars">Mars</button>
+                    <button class="menu-item" data-type="planet" data-name="Jupiter">Jupiter</button>
+                    <button class="menu-item" data-type="planet" data-name="Saturn">Saturn</button>
+                    <button class="menu-item" data-type="planet" data-name="Uranus">Uranus</button>
+                    <button class="menu-item" data-type="planet" data-name="Neptune">Neptune</button>
+                    <button class="menu-item" data-type="planet" data-name="Green Planet">Green Planet</button>
+                    <button class="menu-item" data-type="planet" data-name="Alien Planet">Alien Planet</button>
+                    <button class="menu-item" data-type="planet" data-name="Lava Planet">Lava Planet</button>
+                </div>
+            </div>
+            <div class="menu-section">
+                <h3 class="menu-title">Stars</h3>
+                <div class="menu-items">
+                    <button class="menu-item" data-type="star" data-name="Sun">Sun</button>
+                    <button class="menu-item" data-type="star" data-name="Dwarf Star">Dwarf Star</button>
+                </div>
             </div>
         </div>
-        <div class="menu-section">
-            <h3 class="menu-title">Stars</h3>
-            <div class="menu-items">
-                <button class="menu-item" data-type="star" data-name="Sun">Sun</button>
-                <button class="menu-item" data-type="star" data-name="Red Giant">Red Giant</button>
-                <button class="menu-item" data-type="star" data-name="White Dwarf">White Dwarf</button>
-            </div>
-        </div>
+        <button class="sidebar-toggle" id="leftToggle"><i class="fas fa-chevron-left"></i></button>
     </div>
-    <div class="right-sidebar">
-        <h3 class="menu-title">Background Color</h3>
-        <div class="color-options">
-            <button class="color-circle" data-color="#FFFFFF" style="background: #FFFFFF; border-color: #999;"
-                title="White"></button>
-            <button class="color-circle" data-color="#000000" style="background: #000000;" title="Black"></button>
-            <button class="color-circle" data-color="#F5F5F5" style="background: #F5F5F5; border-color: #999;"
-                title="Off-White"></button>
-            <button class="color-circle" data-color="#808080" style="background: #808080;" title="Grey"></button>
-            <button class="color-circle custom-color"
-                style="background: linear-gradient(45deg, #ff0000, #00ff00, #0000ff); border-color: #fff;"
-                title="Custom Color" id="customColorBtn">+</button>
+    <div class="right-sidebar" id="rightSidebar">
+        <div class="sidebar-content">
+            <h3 class="menu-title">Background Color</h3>
+            <div class="color-options">
+                <button class="color-circle" data-color="#FFFFFF" style="background: #FFFFFF; border-color: #999;"
+                    title="White"></button>
+                <button class="color-circle" data-color="#000000" style="background: #000000;" title="Black"></button>
+                <button class="color-circle" data-color="#F5F5F5" style="background: #F5F5F5; border-color: #999;"
+                    title="Off-White"></button>
+                <button class="color-circle" data-color="#808080" style="background: #808080;" title="Grey"></button>
+                <button class="color-circle custom-color"
+                    style="background: linear-gradient(45deg, #ff0000, #00ff00, #0000ff); border-color: #fff;"
+                    title="Custom Color" id="customColorBtn">+</button>
+            </div>
+            <div class="checkbox-group">
+                <label class="checkbox-label">
+                    <input type="checkbox" id="starToggle" checked>
+                    <span>Stars</span>
+                </label>
+            </div>
+            <div class="checkbox-group">
+                <label class="checkbox-label">
+                    <input type="checkbox" id="gridToggle" checked>
+                    <span>Grid</span>
+                </label>
+            </div>
         </div>
-        <div class="checkbox-group">
-            <label class="checkbox-label">
-                <input type="checkbox" id="starToggle" checked>
-                <span>Stars</span>
-            </label>
-        </div>
-        <div class="checkbox-group">
-            <label class="checkbox-label">
-                <input type="checkbox" id="gridToggle">
-                <span>Grid</span>
-            </label>
-        </div>
+        <button class="sidebar-toggle" id="rightToggle"><i class="fas fa-chevron-right"></i></button>
     </div>
     <footer class="github-footer">
         Checkout <a href="https://github.com/sujalnegi/galaxias" target="_blank" rel="noopener noreferrer">Galaxias</a>
