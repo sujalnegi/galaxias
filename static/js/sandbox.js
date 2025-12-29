@@ -25,15 +25,15 @@ function init() {
     controls.dampingFactor = 0.05;
     controls.minDistance = 100;
     controls.maxDistance = 50000;
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.6); // Increased base brightness
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.6); 
     scene.add(ambientLight);
 
-    const hemisphereLight = new THREE.HemisphereLight(0xffffff, 0x444444, 0.8); // Soft overall light
+    const hemisphereLight = new THREE.HemisphereLight(0xffffff, 0x444444, 0.8); 
     scene.add(hemisphereLight);
-    const directionalLight = new THREE.DirectionalLight(0xffffff, 1.0); // Sun-like light
+    const directionalLight = new THREE.DirectionalLight(0xffffff, 1.0); 
     directionalLight.position.set(500, 1000, 750);
     scene.add(directionalLight);
-    const pointLight = new THREE.PointLight(0xffffff, 2.0, 50000); // Strong central light
+    const pointLight = new THREE.PointLight(0xffffff, 2.0, 50000); 
     pointLight.position.set(0, 0, 0);
     scene.add(pointLight);
     createStarfield();
@@ -135,9 +135,6 @@ function setupEventListeners() {
             updateStarContrast(color);
         });
     });
-
-
-
     function loadModel(name) {
         const loader = new THREE.GLTFLoader();
         const fileName = name.toLowerCase().replace(' ', '_');
@@ -183,7 +180,7 @@ function setupEventListeners() {
                 attempts++;
             }
             if (!validPosition) {
-                console.warn('Could not find free space for object');
+                console.warn('Could not find free space for object. You have filled too much of space');
                 model.position.set(
                     (Math.random() - 0.5) * positionOffset * 1.5,
                     0,
@@ -316,21 +313,147 @@ function setupEventListeners() {
         hideAllBtn.addEventListener('click', toggleAllVisibility);
     }
 
+    const recentreBtn = document.getElementById('recentreBtn');
+    function resetCamera() {
+        camera.position.set(0, 3000, 3000);
+        camera.lookAt(0, 0, 0);
+        if (controls) {
+            controls.target.set(0, 0, 0);
+            controls.update();
+        }
+    }
+    if (recentreBtn) {
+        recentreBtn.addEventListener('click', resetCamera);
+    }
+
     window.addEventListener('keydown', (e) => {
         const key = e.key.toLowerCase();
         if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
-
         if (key === 'h') {
-            toggleAllVisibility();
-
+          toggleAllVisibility();
         } else if (key === 'g') {
             if (gridToggleBtn) gridToggleBtn.click();
         } else if (key === 's') {
             if (starToggleBtn) starToggleBtn.click();
         } else if (key === 'delete' || key === 'backspace' || key === 'd') {
             if (selectedObject) deleteSelectedObject();
+        } else if (key === 'x') {
+            resetCamera();
+        }
+
+        if (selectedObject) {
+            if (['arrowup', 'arrowdown', 'arrowleft', 'arrowright'].includes(key)) {
+                e.preventDefault();
+            }
         }
     });
+    const validKeys = ['arrowup', 'arrowdown', 'arrowleft', 'arrowright'];
+    const activeKeys = new Set();
+    let movementFrameId = null;
+    let keyHoldStartTime = 0;
+
+    window.addEventListener('keydown', (e) => {
+        const key = e.key.toLowerCase();
+        if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+
+        if (validKeys.includes(key) && !activeKeys.has(key)) {
+            activeKeys.add(key);
+            if (activeKeys.size === 1) {
+                keyHoldStartTime = performance.now();
+                startMovementLoop(e.ctrlKey, e.shiftKey);
+            }
+        }
+    });
+    window.addEventListener('keyup', (e) => {
+        const key = e.key.toLowerCase();
+        if (activeKeys.has(key)) {
+            activeKeys.delete(key);
+            if (activeKeys.size === 0) {
+                stopMovementLoop();
+            }
+        }
+    });
+    window.addEventListener('blur', () => {
+        activeKeys.clear();
+        stopMovementLoop();
+    });
+
+    function startMovementLoop(isCtrlPressed, isShiftPressed) {
+        if (movementFrameId) return;
+
+        function updateLoop(timestamp) {
+            if (!selectedObject || activeKeys.size === 0) {
+                stopMovementLoop();
+                return;
+            }
+
+            const duration = timestamp - keyHoldStartTime;
+            let speedMultiplier = 1;
+            if (duration > 200) {
+                speedMultiplier = 1 + Math.pow((duration - 200) / 1000, 2) * 5;
+            }
+            speedMultiplier = Math.min(speedMultiplier, 50);
+
+            const moveBase = 10;
+            const scaleBase = 0.1;
+            const currentMoveStep = moveBase * speedMultiplier;
+            const currentScaleStep = scaleBase * speedMultiplier * 0.1; 
+
+            let changed = false;
+
+            if (isCtrlPressed) {
+                if (activeKeys.has('arrowup')) {
+                    const newScale = selectedObject.scale.x + currentScaleStep;
+                    selectedObject.scale.set(newScale, newScale, newScale);
+                    changed = true;
+                }
+                if (activeKeys.has('arrowdown')) {
+                    const newScale = Math.max(0.1, selectedObject.scale.x - currentScaleStep);
+                    selectedObject.scale.set(newScale, newScale, newScale);
+                    changed = true;
+                }
+            } else if (isShiftPressed) {
+                if (activeKeys.has('arrowup')) {
+                    selectedObject.position.y += currentMoveStep;
+                    changed = true;
+                }
+                if (activeKeys.has('arrowdown')) {
+                    selectedObject.position.y -= currentMoveStep;
+                    changed = true;
+                }
+            } else {
+                if (activeKeys.has('arrowup')) {
+                    selectedObject.position.z -= currentMoveStep;
+                    changed = true;
+                }
+                if (activeKeys.has('arrowdown')) {
+                    selectedObject.position.z += currentMoveStep;
+                    changed = true;
+                }
+                if (activeKeys.has('arrowleft')) {
+                    selectedObject.position.x -= currentMoveStep;
+                    changed = true;
+                }
+                if (activeKeys.has('arrowright')) {
+                    selectedObject.position.x += currentMoveStep;
+                    changed = true;
+                }
+            }
+
+            if (changed) {
+                if (selectionHelper) selectionHelper.update();
+                updatePropertiesPanel();
+            }
+            movementFrameId = requestAnimationFrame(updateLoop);
+        }
+        movementFrameId = requestAnimationFrame(updateLoop);
+    }
+    function stopMovementLoop() {
+        if (movementFrameId) {
+            cancelAnimationFrame(movementFrameId);
+            movementFrameId = null;
+        }
+    }
     const propInputs = ['propX', 'propY', 'propZ', 'propScale', 'propScaleRange'];
     propInputs.forEach(id => {
         const input = document.getElementById(id);
