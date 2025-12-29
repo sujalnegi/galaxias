@@ -90,6 +90,13 @@ function setupEventListeners() {
             scene.background = new THREE.Color(color);
         });
     });
+    const gridToggle = document.getElementById('gridToggle');
+    if (gridToggle) {
+        gridToggle.addEventListener('change', () => {
+            if (gridHelper) gridHelper.visible = gridToggle.checked;
+        });
+    }
+
 
     function loadModel(name) {
         const loader = new THREE.GLTFLoader();
@@ -111,8 +118,13 @@ function setupEventListeners() {
                 0,
                 (Math.random() - 0.5) * positionOffset
             );
+
+            model.userData.isSelectable = true;
+            model.userData.name = name;
+
             scene.add(model);
             console.log(`Loaded ${name} at`, model.position);
+            selectObject(model);
         }, undefined, function (error) {
             console.error(`Error loading ${name}:`, error);
             alert(`Could not load ${name} model.`);
@@ -136,12 +148,6 @@ function setupEventListeners() {
             }
         });
     }
-    const gridToggle = document.getElementById('gridToggle');
-    if (gridToggle) {
-        gridToggle.addEventListener('change', () => {
-            if (gridHelper) gridHelper.visible = gridToggle.checked;
-        });
-    }
 
     const leftSidebar = document.getElementById('leftSidebar');
     const leftToggle = document.getElementById('leftToggle');
@@ -158,13 +164,28 @@ function setupEventListeners() {
         });
     }
 
-    const rightSidebar = document.getElementById('rightSidebar');
-    const rightToggle = document.getElementById('rightToggle');
-    if (rightToggle && rightSidebar) {
-        rightToggle.addEventListener('click', () => {
-            rightSidebar.classList.toggle('collapsed');
-            const isCollapsed = rightSidebar.classList.contains('collapsed');
-            const icon = rightToggle.querySelector('i');
+    const sceneSidebar = document.getElementById('sceneSidebar');
+    const sceneToggle = document.getElementById('sceneToggle');
+    if (sceneToggle && sceneSidebar) {
+        sceneToggle.addEventListener('click', () => {
+            sceneSidebar.classList.toggle('collapsed');
+            const isCollapsed = sceneSidebar.classList.contains('collapsed');
+            const icon = sceneToggle.querySelector('i');
+            if (isCollapsed) {
+                icon.className = 'fas fa-chevron-left';
+            } else {
+                icon.className = 'fas fa-chevron-right';
+            }
+        });
+    }
+
+    const propertiesSidebar = document.getElementById('propertiesSidebar');
+    const propertiesToggle = document.getElementById('propertiesToggle');
+    if (propertiesToggle && propertiesSidebar) {
+        propertiesToggle.addEventListener('click', () => {
+            propertiesSidebar.classList.toggle('collapsed');
+            const isCollapsed = propertiesSidebar.classList.contains('collapsed');
+            const icon = propertiesToggle.querySelector('i');
             if (isCollapsed) {
                 icon.className = 'fas fa-chevron-left';
             } else {

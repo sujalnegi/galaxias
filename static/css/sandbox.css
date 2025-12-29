@@ -3,12 +3,14 @@
     padding: 0;
     box-sizing: border-box;
 }
+
 body {
     font-family: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     background: #000;
     color: #fff;
     overflow: hidden;
 }
+
 #canvas-container {
     position: fixed;
     top: 0;
@@ -17,6 +19,7 @@ body {
     height: 100%;
     z-index: 1;
 }
+
 .top-bar {
     position: fixed;
     top: 0;
@@ -29,6 +32,7 @@ body {
     background: linear-gradient(180deg, rgba(0, 0, 0, 0.8) 0%, transparent 100%);
     z-index: 100;
 }
+
 .logo {
     font-family: 'Comic Sans MS', 'Comic Sans', cursive;
     font-size: 2.5rem;
@@ -39,10 +43,12 @@ body {
     background-clip: text;
     letter-spacing: 0.1em;
 }
+
 .top-controls {
     display: flex;
     gap: 15px;
 }
+
 .control-btn {
     padding: 10px 20px;
     background: rgba(255, 255, 255, 0.1);
@@ -56,11 +62,13 @@ body {
     transition: all 0.3s ease;
     backdrop-filter: blur(10px);
 }
+
 .control-btn:hover {
     background: rgba(255, 159, 67, 0.3);
     border-color: rgba(255, 159, 67, 0.6);
     transform: translateY(-2px);
 }
+
 .sidebar-menu {
     position: fixed;
     left: 20px;
@@ -76,12 +84,15 @@ body {
     transition: transform 0.3s ease;
     overflow: visible;
 }
+
 .menu-section {
     margin-bottom: 25px;
 }
+
 .menu-section:last-child {
     margin-bottom: 0;
 }
+
 .menu-title {
     font-family: 'Shabo', sans-serif;
     font-size: 1.2rem;
@@ -90,11 +101,13 @@ body {
     border-bottom: 2px solid rgba(255, 159, 67, 0.3);
     padding-bottom: 8px;
 }
+
 .menu-items {
     display: flex;
     flex-direction: column;
     gap: 8px;
 }
+
 .menu-item {
     padding: 10px 15px;
     background: rgba(255, 255, 255, 0.05);
@@ -107,14 +120,17 @@ body {
     transition: all 0.3s ease;
     text-align: left;
 }
+
 .menu-item:hover {
     background: rgba(255, 159, 67, 0.2);
     border-color: rgba(255, 159, 67, 0.5);
     transform: translateX(5px);
 }
+
 .menu-item:active {
     transform: translateX(3px);
 }
+
 .right-sidebar {
     position: fixed;
     right: 20px;
@@ -130,29 +146,34 @@ body {
     transition: transform 0.3s ease;
     overflow: visible;
 }
+
 .right-sidebar h3 {
     font-family: 'Shabo', sans-serif;
     font-size: 1.2rem;
     margin-bottom: 15px;
     color: #FFD700;
 }
+
 .properties-panel {
     display: flex;
     flex-direction: column;
     gap: 15px;
 }
+
 .no-selection {
     color: rgba(255, 255, 255, 0.5);
     font-size: 0.9rem;
     text-align: center;
     padding: 20px;
 }
+
 .color-options {
     display: flex;
     flex-direction: row;
     gap: 15px;
     justify-content: center;
 }
+
 .color-circle {
     width: 30px;
     height: 30px;
@@ -162,19 +183,23 @@ body {
     transition: all 0.3s ease;
     padding: 0;
 }
+
 .color-circle:hover {
     border-color: rgba(255, 159, 67, 0.6);
     box-shadow: 0 0 15px rgba(255, 159, 67, 0.3);
 }
+
 .color-circle:active {
     transform: scale(1.1);
 }
+
 .custom-color {
     color: #fff;
     font-size: 1.5rem;
     font-weight: bold;
     text-shadow: 0 0 3px rgba(0, 0, 0, 0.8);
 }
+
 .toggle-btn {
     width: 100%;
     padding: 12px 15px;
@@ -187,16 +212,20 @@ body {
     cursor: pointer;
     transition: all 0.3s ease;
 }
+
 .toggle-btn:hover {
     background: rgba(255, 159, 67, 0.2);
     border-color: rgba(255, 159, 67, 0.5);
 }
+
 .toggle-btn:active {
     transform: scale(0.98);
 }
+
 .checkbox-group {
     margin-top: 20px;
 }
+
 .checkbox-label {
     display: flex;
     align-items: center;
@@ -206,15 +235,18 @@ body {
     color: #fff;
     user-select: none;
 }
+
 .checkbox-label input[type="checkbox"] {
     width: 18px;
     height: 18px;
     cursor: pointer;
     accent-color: #FF9F43;
 }
+
 .checkbox-label span {
     font-weight: 500;
 }
+
 .github-footer {
     position: fixed;
     bottom: 20px;
@@ -226,9 +258,11 @@ body {
     opacity: 0.7;
     transition: opacity 0.3s ease;
 }
+
 .github-footer:hover {
     opacity: 1;
 }
+
 .github-footer a {
     color: #FF9F43;
     text-decoration: none;
@@ -236,10 +270,12 @@ body {
     transition: all 0.3s ease;
     position: relative;
 }
+
 .github-footer a:hover {
     color: #FFD700;
     text-shadow: 0 0 10px rgba(255, 159, 67, 0.5);
 }
+
 .github-footer a::after {
     content: '';
     position: absolute;
@@ -250,31 +286,22 @@ body {
     background: linear-gradient(90deg, #FF9F43, #FFD700);
     transition: width 0.3s ease;
 }
+
 .github-footer a:hover::after {
     width: 100%;
 }
 
 .sidebar-content::-webkit-scrollbar {
-    width: 8px;
+    display: none;
 }
 
-.sidebar-content::-webkit-scrollbar-track {
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 4px;
-}
-
-.sidebar-content::-webkit-scrollbar-thumb {
-    background: rgba(255, 159, 67, 0.6);
-    border-radius: 4px;
-}
-
-.sidebar-content::-webkit-scrollbar-thumb:hover {
-    background: rgba(255, 159, 67, 0.8);
-}
 .sidebar-content {
     max-height: 70vh;
     overflow-y: auto;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
 }
+
 .sidebar-toggle {
     position: absolute;
     top: 50%;
@@ -292,35 +319,124 @@ body {
     z-index: 101;
     transition: background 0.3s ease;
 }
-.sidebar-toggle:hover {
-    background: rgba(255, 159, 67, 0.2);
-}
+
 #leftToggle {
     right: -32px;
     border-left: none;
     border-radius: 0 8px 8px 0;
 }
+
 #rightToggle {
     left: -32px;
     border-right: none;
     border-radius: 8px 0 0 8px;
 }
+
 .sidebar-menu.collapsed {
     transform: translateY(-50%) translateX(-100%);
 }
+
 .right-sidebar.collapsed {
     transform: translateY(-50%) translateX(100%);
 }
+
 @media (max-width: 768px) {
+
     .left-sidebar,
     .right-sidebar {
         width: 180px;
     }
+
     .logo {
         font-size: 1.4rem;
     }
+
     .control-btn {
         padding: 8px 15px;
         font-size: 0.8rem;
+    }
+}
+
+.property-item {
+    margin-bottom: 15px;
+}
+
+.property-item label {
+    display: block;
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.7);
+    margin-bottom: 5px;
+}
+
+.property-item span {
+    font-weight: bold;
+    color: #FFD700;
+}
+
+.coord-inputs {
+    display: flex;
+    gap: 5px;
+}
+
+.coord-inputs input,
+#propScale {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+    padding: 5px;
+    color: #fff;
+    font-family: inherit;
+}
+
+.coord-inputs input:focus,
+#propScale:focus {
+    outline: none;
+    border-color: #FF9F43;
+}
+
+.tabs-header {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    border-bottom: 2px solid rgba(255, 159, 67, 0.2);
+}
+
+.tab-btn {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: rgba(255, 255, 255, 0.6);
+    padding: 10px;
+    cursor: pointer;
+    font-family: inherit;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -2px;
+}
+
+.tab-btn:hover {
+    color: #fff;
+}
+
+.tab-btn.active {
+    color: #FFD700;
+    border-bottom-color: #FF9F43;
+}
+
+.tab-content {
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(5px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
     }
 }

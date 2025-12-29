@@ -53,29 +53,71 @@
     </div>
     <div class="right-sidebar" id="rightSidebar">
         <div class="sidebar-content">
-            <h3 class="menu-title">Background Color</h3>
-            <div class="color-options">
-                <button class="color-circle" data-color="#FFFFFF" style="background: #FFFFFF; border-color: #999;"
-                    title="White"></button>
-                <button class="color-circle" data-color="#000000" style="background: #000000;" title="Black"></button>
-                <button class="color-circle" data-color="#F5F5F5" style="background: #F5F5F5; border-color: #999;"
-                    title="Off-White"></button>
-                <button class="color-circle" data-color="#808080" style="background: #808080;" title="Grey"></button>
-                <button class="color-circle custom-color"
-                    style="background: linear-gradient(45deg, #ff0000, #00ff00, #0000ff); border-color: #fff;"
-                    title="Custom Color" id="customColorBtn">+</button>
+            <div class="tabs-header">
+                <button class="tab-btn active" data-tab="sceneTab">Scene</button>
+                <button class="tab-btn" data-tab="objectTab">Properties</button>
             </div>
-            <div class="checkbox-group">
-                <label class="checkbox-label">
-                    <input type="checkbox" id="starToggle" checked>
-                    <span>Stars</span>
-                </label>
+
+            <div id="sceneTab" class="tab-content">
+                <h3 class="menu-title">Background Color</h3>
+                <div class="color-options">
+                    <button class="color-circle" data-color="#FFFFFF" style="background: #FFFFFF; border-color: #999;"
+                        title="White"></button>
+                    <button class="color-circle" data-color="#000000" style="background: #000000;"
+                        title="Black"></button>
+                    <button class="color-circle" data-color="#F5F5F5" style="background: #F5F5F5; border-color: #999;"
+                        title="Off-White"></button>
+                    <button class="color-circle" data-color="#808080" style="background: #808080;"
+                        title="Grey"></button>
+                    <button class="color-circle custom-color"
+                        style="background: linear-gradient(45deg, #ff0000, #00ff00, #0000ff); border-color: #fff;"
+                        title="Custom Color" id="customColorBtn">+</button>
+                </div>
+                <div class="checkbox-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="starToggle" checked>
+                        <span>Stars</span>
+                    </label>
+                </div>
+                <div class="checkbox-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="gridToggle" checked>
+                        <span>Grid</span>
+                    </label>
+                </div>
             </div>
-            <div class="checkbox-group">
-                <label class="checkbox-label">
-                    <input type="checkbox" id="gridToggle" checked>
-                    <span>Grid</span>
-                </label>
+
+            <div id="objectTab" class="tab-content" style="display: none;">
+                <div id="propertiesPanel" class="menu-section">
+                    <h3 class="menu-title">Properties</h3>
+                    <div class="properties-content">
+                        <div class="property-item">
+                            <label>Name</label>
+                            <span id="propName">Planet</span>
+                        </div>
+                        <div class="property-item">
+                            <label>Position (X, Y, Z)</label>
+                            <div class="coord-inputs">
+                                <input type="number" id="propX" step="10">
+                                <input type="number" id="propY" step="10">
+                                <input type="number" id="propZ" step="10">
+                            </div>
+                        </div>
+                        <div class="property-item">
+                            <label>Scale</label>
+                            <input type="number" id="propScale" step="0.1" min="0.1">
+                        </div>
+                        <div class="property-item">
+                            <button class="control-btn" id="deleteBtn"
+                                style="width: 100%; background: rgba(255, 59, 48, 0.2); border-color: rgba(255, 59, 48, 0.5);">Delete
+                                Object</button>
+                        </div>
+                    </div>
+                </div>
+                <div id="noSelectionMsg" class="no-selection"
+                    style="padding: 20px; text-align: center; color: rgba(255,255,255,0.5);">
+                    Select an object to view properties
+                </div>
             </div>
         </div>
         <button class="sidebar-toggle" id="rightToggle"><i class="fas fa-chevron-right"></i></button>
