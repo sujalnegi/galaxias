@@ -12,6 +12,7 @@
     href="https://fonts.googleapis.com/css2?family=Shabo:wght@400;700;900&family=Korvich:wght@400;700&display=swap"
     rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 </head>
 
 <body>
@@ -21,7 +22,7 @@
             <div class="progress-container">
                 <div class="progress-bar" id="progressBar"></div>
             </div>
-            <div class="loading-text" id="loadingText">Initializing Simulation...</div>
+            <div class="loading-text" id="loadingText">Loading your playground</div>
         </div>
     </div>
     <div id="canvas-container"></div>
@@ -82,17 +83,19 @@
                         style="background: linear-gradient(45deg, #ff0000, #00ff00, #0000ff); border-color: #fff;"
                         title="Custom Color" id="customColorBtn">+</button>
                 </div>
-                <div class="checkbox-group">
-                    <label class="checkbox-label">
-                        <input type="checkbox" id="starToggle" checked>
+                <div class="toggle-buttons-container">
+                    <button class="icon-toggle-btn active" id="starToggleBtn" title="Toggle Stars">
+                        <span class="material-icons">auto_awesome</span>
                         <span>Stars</span>
-                    </label>
-                </div>
-                <div class="checkbox-group">
-                    <label class="checkbox-label">
-                        <input type="checkbox" id="gridToggle" checked>
+                    </button>
+                    <button class="icon-toggle-btn active" id="gridToggleBtn" title="Toggle Grid">
+                        <span class="material-icons">grid_on</span>
                         <span>Grid</span>
-                    </label>
+                    </button>
+                    <button class="icon-toggle-btn active" id="hideAllBtn" title="Hide All Objects (H)">
+                        <span class="material-icons">visibility</span>
+                        <span>All</span>
+                    </button>
                 </div>
             </div>
 

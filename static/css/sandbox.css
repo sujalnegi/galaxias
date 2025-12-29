@@ -440,6 +440,7 @@ body {
         transform: translateY(0);
     }
 }
+
 #loading-screen {
     position: fixed;
     top: 0;
@@ -455,17 +456,20 @@ body {
     font-family: 'Outfit', sans-serif;
     transition: opacity 0.5s ease-out;
 }
+
 .loader-content {
     text-align: center;
     width: 300px;
 }
+
 .loader-title {
     font-size: 2rem;
-    color: #FFD700;
+    color: #fff;
     margin-bottom: 2rem;
     font-weight: 700;
     letter-spacing: 0.1em;
 }
+
 .progress-container {
     width: 100%;
     height: 4px;
@@ -475,16 +479,54 @@ body {
     margin-bottom: 1rem;
     position: relative;
 }
+
 .progress-bar {
     width: 0%;
     height: 100%;
-    background: linear-gradient(90deg, #FF9F43, #FFD700);
+    background: #fff;
     transition: width 0.3s ease-out;
-    box-shadow: 0 0 10px rgba(255, 159, 67, 0.5);
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
 }
 
-.loading-text {
+.toggle-buttons-container {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+    justify-content: center;
+}
+.icon-toggle-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    padding: 10px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
     color: rgba(255, 255, 255, 0.6);
-    font-size: 0.9rem;
-    margin-top: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    flex: 1;
+}
+.icon-toggle-btn .material-icons {
+    font-size: 1.5rem;
+}
+.icon-toggle-btn span:last-child {
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+.icon-toggle-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+}
+
+.icon-toggle-btn.active {
+    background: rgba(255, 255, 255, 0.05);
+    border: 2px solid #FF9F43;
+    color: #fff;
+    box-shadow: 0 0 8px rgba(255, 159, 67, 0.5), inset 0 0 5px rgba(255, 159, 67, 0.2);
+}
+
+.icon-toggle-btn.active .material-icons {
+    text-shadow: none;
 }

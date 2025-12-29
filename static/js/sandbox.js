@@ -13,7 +13,7 @@ function init() {
         0.1,
         100000
     );
-    camera.position.set(0, 500, 1000);
+    camera.position.set(0, 3000, 3000);
 
     renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
@@ -25,16 +25,21 @@ function init() {
     controls.dampingFactor = 0.05;
     controls.minDistance = 100;
     controls.maxDistance = 50000;
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.3);
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.6); // Increased base brightness
     scene.add(ambientLight);
-    const pointLight = new THREE.PointLight(0xffffff, 1.5);
+
+    const hemisphereLight = new THREE.HemisphereLight(0xffffff, 0x444444, 0.8); // Soft overall light
+    scene.add(hemisphereLight);
+    const directionalLight = new THREE.DirectionalLight(0xffffff, 1.0); // Sun-like light
+    directionalLight.position.set(500, 1000, 750);
+    scene.add(directionalLight);
+    const pointLight = new THREE.PointLight(0xffffff, 2.0, 50000); // Strong central light
     pointLight.position.set(0, 0, 0);
     scene.add(pointLight);
     createStarfield();
     createGrid();
     window.addEventListener('resize', onWindowResize);
     setupEventListeners();
-
     animate();
     preloadAssets();
 }
@@ -130,12 +135,7 @@ function setupEventListeners() {
             updateStarContrast(color);
         });
     });
-    const gridToggle = document.getElementById('gridToggle');
-    if (gridToggle) {
-        gridToggle.addEventListener('change', () => {
-            if (gridHelper) gridHelper.visible = gridToggle.checked;
-        });
-    }
+
 
 
     function loadModel(name) {
@@ -152,12 +152,44 @@ function setupEventListeners() {
         loader.load(`/static/assets/${fileName}.glb`, function (gltf) {
             const model = gltf.scene;
             model.scale.set(scale, scale, scale);
-            const positionOffset = 500;
-            model.position.set(
-                (Math.random() - 0.5) * positionOffset,
-                0,
-                (Math.random() - 0.5) * positionOffset
-            );
+            const box = new THREE.Box3().setFromObject(model);
+            const size = new THREE.Vector3();
+            box.getSize(size);
+            const radius = Math.max(size.x, size.z) / 2;
+            model.userData.radius = radius;
+
+            const positionOffset = 3000; 
+            let validPosition = false;
+            let attempts = 0;
+            const maxAttempts = 100;
+
+            while (!validPosition && attempts < maxAttempts) {
+                const x = (Math.random() - 0.5) * positionOffset;
+                const z = (Math.random() - 0.5) * positionOffset;
+
+                validPosition = true;
+                scene.children.forEach(child => {
+                    if (child.userData.isSelectable && child !== model) {
+                        const dist = Math.sqrt(Math.pow(child.position.x - x, 2) + Math.pow(child.position.z - z, 2));
+                        const minDistance = radius + (child.userData.radius || 0) + 50; 
+                        if (dist < minDistance) {
+                            validPosition = false;
+                        }
+                    }
+                });
+                if (validPosition) {
+                    model.position.set(x, 0, z);
+                }
+                attempts++;
+            }
+            if (!validPosition) {
+                console.warn('Could not find free space for object');
+                model.position.set(
+                    (Math.random() - 0.5) * positionOffset * 1.5,
+                    0,
+                    (Math.random() - 0.5) * positionOffset * 1.5
+                );
+            }
 
             model.userData.isSelectable = true;
             model.userData.name = name;
@@ -170,12 +202,7 @@ function setupEventListeners() {
             alert(`Could not load ${name} model.`);
         });
     }
-    const starToggle = document.getElementById('starToggle');
-    if (starToggle) {
-        starToggle.addEventListener('change', () => {
-            if (starfield) starfield.visible = starToggle.checked;
-        });
-    }
+
     const customColorBtn = document.getElementById('customColorBtn');
     if (customColorBtn) {
         customColorBtn.addEventListener('click', () => {
@@ -236,6 +263,72 @@ function setupEventListeners() {
             }
         });
     });
+    const starToggleBtn = document.getElementById('starToggleBtn');
+    if (starToggleBtn) {
+        starToggleBtn.addEventListener('click', () => {
+            starToggleBtn.classList.toggle('active');
+            const isActive = starToggleBtn.classList.contains('active');
+            if (starfield) starfield.visible = isActive;
+        });
+    }
+    const gridToggleBtn = document.getElementById('gridToggleBtn');
+    if (gridToggleBtn) {
+        gridToggleBtn.addEventListener('click', () => {
+            gridToggleBtn.classList.toggle('active');
+            const isActive = gridToggleBtn.classList.contains('active');
+            if (gridHelper) gridHelper.visible = isActive;
+        });
+    }
+    const hideAllBtn = document.getElementById('hideAllBtn');
+    let allVisible = true;
+
+    function toggleAllVisibility() {
+        const leftSidebar = document.getElementById('leftSidebar');
+        const rightSidebar = document.getElementById('rightSidebar');
+        const icon = hideAllBtn.querySelector('.material-icons');
+        const isLeftVisible = !leftSidebar.classList.contains('collapsed');
+        const isRightVisible = !rightSidebar.classList.contains('collapsed');
+
+        if (isLeftVisible || isRightVisible) {
+            leftSidebar.classList.add('collapsed');
+            rightSidebar.classList.add('collapsed');
+            const leftToggleIcon = document.querySelector('#leftToggle i');
+            if (leftToggleIcon) leftToggleIcon.className = 'fas fa-chevron-right';
+            const rightToggleIcon = document.querySelector('#rightToggle i');
+            if (rightToggleIcon) rightToggleIcon.className = 'fas fa-chevron-left';
+
+            hideAllBtn.classList.remove('active');
+            icon.textContent = 'visibility_off';
+        } else {
+            leftSidebar.classList.remove('collapsed');
+            rightSidebar.classList.remove('collapsed');
+
+            const leftToggleIcon = document.querySelector('#leftToggle i');
+            if (leftToggleIcon) leftToggleIcon.className = 'fas fa-chevron-left';
+            const rightToggleIcon = document.querySelector('#rightToggle i');
+            if (rightToggleIcon) rightToggleIcon.className = 'fas fa-chevron-right';
+            hideAllBtn.classList.add('active');
+            icon.textContent = 'visibility';
+        }
+    }
+
+    if (hideAllBtn) {
+        hideAllBtn.addEventListener('click', toggleAllVisibility);
+    }
+
+    window.addEventListener('keydown', (e) => {
+        const key = e.key.toLowerCase();
+        if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+
+        if (key === 'h') {
+            toggleAllVisibility();
+        } else if (key === 'g') {
+            if (gridToggleBtn) gridToggleBtn.click();
+        } else if (key === 's') {
+            if (starToggleBtn) starToggleBtn.click();
+        }
+    });
+
 }
 function onWindowResize() {
     camera.aspect = window.innerWidth / window.innerHeight;
@@ -288,7 +381,6 @@ function onMouseClick(event) {
             return;
         }
     }
-
     deselectObject();
 }
 function animate() {
