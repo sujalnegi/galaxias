@@ -108,21 +108,36 @@
                             <span id="propName">Planet</span>
                         </div>
                         <div class="property-item">
-                            <label>Position (X, Y, Z)</label>
-                            <div class="coord-inputs">
-                                <input type="number" id="propX" step="10">
-                                <input type="number" id="propY" step="10">
-                                <input type="number" id="propZ" step="10">
+                            <label>Position</label>
+                            <div class="coord-row">
+                                <div class="coord-group">
+                                    <span class="coord-label">X</span>
+                                    <input type="number" id="propX" class="styled-input" step="10">
+                                </div>
+                                <div class="coord-group">
+                                    <span class="coord-label">Y</span>
+                                    <input type="number" id="propY" class="styled-input" step="10">
+                                </div>
+                                <div class="coord-group">
+                                    <span class="coord-label">Z</span>
+                                    <input type="number" id="propZ" class="styled-input" step="10">
+                                </div>
                             </div>
                         </div>
                         <div class="property-item">
                             <label>Scale</label>
-                            <input type="number" id="propScale" step="0.1" min="0.1">
+                            <div class="scale-control">
+                                <input type="range" id="propScaleRange" min="0.1" max="100" step="0.1"
+                                    class="styled-range">
+                                <input type="number" id="propScale" class="styled-input" step="0.1" min="0.1"
+                                    style="width: 60px;">
+                            </div>
                         </div>
                         <div class="property-item">
-                            <button class="control-btn" id="deleteBtn"
-                                style="width: 100%; background: rgba(255, 59, 48, 0.2); border-color: rgba(255, 59, 48, 0.5);">Delete
-                                Object</button>
+                            <button class="icon-text-btn delete-btn" id="deleteBtn" title="Delete Object (D)">
+                                <span class="material-icons">delete</span>
+                                <span>Delete Object</span>
+                            </button>
                         </div>
                     </div>
                 </div>

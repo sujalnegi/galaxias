@@ -373,26 +373,107 @@ body {
     color: #FFD700;
 }
 
-.coord-inputs {
+.coord-row {
     display: flex;
-    gap: 5px;
+    gap: 8px;
 }
 
-.coord-inputs input,
-#propScale {
+.coord-group {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.coord-label {
+    font-size: 0.7rem;
+    color: rgba(255, 255, 255, 0.5);
+    text-transform: uppercase;
+}
+
+.styled-input {
     width: 100%;
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 4px;
-    padding: 5px;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 159, 67, 0.3);
+    border-radius: 6px;
+    padding: 8px;
     color: #fff;
     font-family: inherit;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
 }
 
-.coord-inputs input:focus,
-#propScale:focus {
+.styled-input:focus {
     outline: none;
     border-color: #FF9F43;
+    background: rgba(0, 0, 0, 0.5);
+    box-shadow: 0 0 5px rgba(255, 159, 67, 0.2);
+}
+
+.styled-input::-webkit-outer-spin-button,
+.styled-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.styled-input[type=number] {
+    -moz-appearance: textfield;
+}
+
+.scale-control {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.styled-range {
+    flex: 1;
+    -webkit-appearance: none;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 2px;
+    outline: none;
+}
+
+.styled-range::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 16px;
+    height: 16px;
+    background: #FF9F43;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: transform 0.1s;
+}
+
+.styled-range::-webkit-slider-thumb:hover {
+    transform: scale(1.2);
+}
+
+.icon-text-btn.delete-btn {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px;
+    background: rgba(255, 59, 48, 0.15);
+    border: 1px solid rgba(255, 59, 48, 0.4);
+    border-radius: 8px;
+    color: #FF3B30;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: inherit;
+    font-weight: 600;
+}
+
+.icon-text-btn.delete-btn:hover {
+    background: rgba(255, 59, 48, 0.25);
+    border-color: #FF3B30;
+    box-shadow: 0 0 10px rgba(255, 59, 48, 0.2);
+}
+
+.icon-text-btn.delete-btn .material-icons {
+    font-size: 1.2rem;
 }
 
 .tabs-header {
@@ -494,6 +575,7 @@ body {
     margin-top: 20px;
     justify-content: center;
 }
+
 .icon-toggle-btn {
     display: flex;
     flex-direction: column;
@@ -508,13 +590,16 @@ body {
     transition: all 0.3s ease;
     flex: 1;
 }
+
 .icon-toggle-btn .material-icons {
     font-size: 1.5rem;
 }
+
 .icon-toggle-btn span:last-child {
     font-size: 0.8rem;
     font-weight: 500;
 }
+
 .icon-toggle-btn:hover {
     background: rgba(255, 255, 255, 0.1);
     color: #fff;

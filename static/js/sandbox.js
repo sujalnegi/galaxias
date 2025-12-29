@@ -158,7 +158,7 @@ function setupEventListeners() {
             const radius = Math.max(size.x, size.z) / 2;
             model.userData.radius = radius;
 
-            const positionOffset = 3000; 
+            const positionOffset = 3000;
             let validPosition = false;
             let attempts = 0;
             const maxAttempts = 100;
@@ -171,7 +171,7 @@ function setupEventListeners() {
                 scene.children.forEach(child => {
                     if (child.userData.isSelectable && child !== model) {
                         const dist = Math.sqrt(Math.pow(child.position.x - x, 2) + Math.pow(child.position.z - z, 2));
-                        const minDistance = radius + (child.userData.radius || 0) + 50; 
+                        const minDistance = radius + (child.userData.radius || 0) + 50;
                         if (dist < minDistance) {
                             validPosition = false;
                         }
@@ -322,12 +322,27 @@ function setupEventListeners() {
 
         if (key === 'h') {
             toggleAllVisibility();
+
         } else if (key === 'g') {
             if (gridToggleBtn) gridToggleBtn.click();
         } else if (key === 's') {
             if (starToggleBtn) starToggleBtn.click();
+        } else if (key === 'delete' || key === 'backspace' || key === 'd') {
+            if (selectedObject) deleteSelectedObject();
         }
     });
+    const propInputs = ['propX', 'propY', 'propZ', 'propScale', 'propScaleRange'];
+    propInputs.forEach(id => {
+        const input = document.getElementById(id);
+        if (input) {
+            input.addEventListener('input', updateSelectedObjectProperties);
+        }
+    });
+
+    const deleteBtn = document.getElementById('deleteBtn');
+    if (deleteBtn) {
+        deleteBtn.addEventListener('click', deleteSelectedObject);
+    }
 
 }
 function onWindowResize() {
@@ -348,6 +363,7 @@ function deselectObject() {
         selectionHelper = null;
     }
     selectedObject = null;
+    updatePropertiesPanel();
 }
 function selectObject(object) {
     if (selectedObject) {
@@ -358,6 +374,76 @@ function selectObject(object) {
 
     selectionHelper = new THREE.BoxHelper(object, 0xffff00);
     scene.add(selectionHelper);
+
+    const propTabBtn = document.querySelector('.tab-btn[data-tab="objectTab"]');
+    if (propTabBtn) propTabBtn.click();
+
+    updatePropertiesPanel();
+}
+
+function updatePropertiesPanel() {
+    const panel = document.getElementById('propertiesPanel');
+    const noSelection = document.getElementById('noSelectionMsg');
+    const nameEl = document.getElementById('propName');
+    const xEl = document.getElementById('propX');
+    const yEl = document.getElementById('propY');
+    const zEl = document.getElementById('propZ');
+    const scaleEl = document.getElementById('propScale');
+
+    if (selectedObject) {
+        if (panel) panel.style.display = 'block';
+        if (noSelection) noSelection.style.display = 'none';
+
+        if (nameEl) nameEl.textContent = selectedObject.userData.name || 'Object';
+        if (xEl) xEl.value = Math.round(selectedObject.position.x);
+        if (yEl) yEl.value = Math.round(selectedObject.position.y);
+        if (zEl) zEl.value = Math.round(selectedObject.position.z);
+        if (scaleEl) {
+            scaleEl.value = selectedObject.scale.x;
+            const rangeEl = document.getElementById('propScaleRange');
+            if (rangeEl) rangeEl.value = selectedObject.scale.x;
+        }
+
+    } else {
+        if (panel) panel.style.display = 'none';
+        if (noSelection) noSelection.style.display = 'block';
+    }
+}
+function updateSelectedObjectProperties() {
+    if (!selectedObject) return;
+
+    const xEl = document.getElementById('propX');
+    const yEl = document.getElementById('propY');
+    const zEl = document.getElementById('propZ');
+    const scaleEl = document.getElementById('propScale');
+    if (xEl && yEl && zEl) {
+        selectedObject.position.set(
+            parseFloat(xEl.value) || 0,
+            parseFloat(yEl.value) || 0,
+            parseFloat(zEl.value) || 0
+        );
+    }
+
+    if (scaleEl) {
+        let scale = parseFloat(scaleEl.value) || 1;
+        const rangeEl = document.getElementById('propScaleRange');
+        if (this && this.id === 'propScaleRange') {
+            scale = parseFloat(this.value);
+            scaleEl.value = scale;
+        } else if (rangeEl) {
+            rangeEl.value = scale;
+        }
+
+        selectedObject.scale.set(scale, scale, scale);
+    }
+    if (selectionHelper) selectionHelper.update();
+}
+
+function deleteSelectedObject() {
+    if (!selectedObject) return;
+
+    scene.remove(selectedObject);
+    deselectObject();
 }
 
 function onMouseClick(event) {
