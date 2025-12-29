@@ -330,6 +330,59 @@ function setupEventListeners() {
         recentreBtn.addEventListener('click', resetCamera);
     }
 
+    const screenshotBtn = document.getElementById('screenshotBtn');
+    const screenshotModal = document.getElementById('screenshotModal');
+    const screenshotPreview = document.getElementById('screenshotPreview');
+    const closeModalBtn = document.getElementById('closeModalBtn');
+    const downloadShotBtn = document.getElementById('downloadShotBtn');
+
+    if (screenshotBtn) {
+        screenshotBtn.addEventListener('click', () => {
+            const currentSelection = selectedObject;
+            if (currentSelection) {
+                deselectObject();
+            }
+            renderer.render(scene, camera);
+            const dataURL = renderer.domElement.toDataURL('image/png');
+
+            if (currentSelection) {
+                selectObject(currentSelection);
+            }
+
+            if (screenshotPreview) {
+                screenshotPreview.src = dataURL;
+            }
+            if (screenshotModal) {
+                screenshotModal.style.display = 'block';
+            }
+        });
+    }
+
+    if (closeModalBtn && screenshotModal) {
+        closeModalBtn.addEventListener('click', () => {
+            screenshotModal.style.display = 'none';
+        });
+    }
+    window.addEventListener('click', (e) => {
+        if (e.target === screenshotModal) {
+            screenshotModal.style.display = 'none';
+        }
+    });
+
+    if (downloadShotBtn && screenshotPreview) {
+        downloadShotBtn.addEventListener('click', () => {
+            const link = document.createElement('a');
+            link.download = 'galaxias_simulation_' + new Date().toISOString().slice(0, 19).replace(/:/g, '-') + '.png';
+            link.href = screenshotPreview.src;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            if (screenshotModal) {
+                screenshotModal.style.display = 'none';
+            }
+        });
+    }
+
     window.addEventListener('keydown', (e) => {
         const key = e.key.toLowerCase();
         if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;

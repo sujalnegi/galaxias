@@ -103,6 +103,10 @@
                         <span class="material-icons">center_focus_strong</span>
                         <span>Center</span>
                     </button>
+                    <button class="icon-toggle-btn" id="screenshotBtn" title="Take Screenshot">
+                        <span class="material-icons">photo_camera</span>
+                        <span>Shot</span>
+                    </button>
                 </div>
             </div>
 
@@ -160,6 +164,20 @@
         Checkout <a href="https://github.com/sujalnegi/galaxias" target="_blank" rel="noopener noreferrer">Galaxias</a>
         at GitHub
     </footer>
+
+    <div id="screenshotModal" class="modal">
+        <div class="modal-content">
+            <h3 class="modal-title">Preview</h3>
+            <div class="modal-image-container">
+                <img id="screenshotPreview" src="" alt="Screenshot Preview">
+            </div>
+            <div class="modal-actions">
+                <button id="closeModalBtn" class="modal-btn cancel">Close</button>
+                <button id="downloadShotBtn" class="modal-btn confirm">Download</button>
+            </div>
+        </div>
+    </div>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
