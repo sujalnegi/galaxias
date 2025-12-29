@@ -25,15 +25,15 @@ function init() {
     controls.dampingFactor = 0.05;
     controls.minDistance = 100;
     controls.maxDistance = 50000;
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.6); 
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
     scene.add(ambientLight);
 
-    const hemisphereLight = new THREE.HemisphereLight(0xffffff, 0x444444, 0.8); 
+    const hemisphereLight = new THREE.HemisphereLight(0xffffff, 0x444444, 0.8);
     scene.add(hemisphereLight);
-    const directionalLight = new THREE.DirectionalLight(0xffffff, 1.0); 
+    const directionalLight = new THREE.DirectionalLight(0xffffff, 1.0);
     directionalLight.position.set(500, 1000, 750);
     scene.add(directionalLight);
-    const pointLight = new THREE.PointLight(0xffffff, 2.0, 50000); 
+    const pointLight = new THREE.PointLight(0xffffff, 2.0, 50000);
     pointLight.position.set(0, 0, 0);
     scene.add(pointLight);
     createStarfield();
@@ -139,16 +139,20 @@ function setupEventListeners() {
         const loader = new THREE.GLTFLoader();
         const fileName = name.toLowerCase().replace(' ', '_');
 
-        let scale = 1;
-        if (name === 'Sun') scale = 50;
-        else if (name === 'Dwarf Star') scale = 25;
-        else if (name === 'Jupiter' || name === 'Saturn') scale = 10;
-        else if (name === 'Uranus' || name === 'Neptune') scale = 5;
-        else scale = 1;
 
         loader.load(`/static/assets/${fileName}.glb`, function (gltf) {
             const model = gltf.scene;
-            model.scale.set(scale, scale, scale);
+            const tempBox = new THREE.Box3().setFromObject(model);
+            const tempSize = new THREE.Vector3();
+            tempBox.getSize(tempSize);
+            const maxDim = Math.max(tempSize.x, tempSize.y, tempSize.z);
+            const targetSize = 500;
+
+            if (maxDim > 0) {
+                const scaleFactor = targetSize / maxDim;
+                model.scale.set(scaleFactor, scaleFactor, scaleFactor);
+            }
+
             const box = new THREE.Box3().setFromObject(model);
             const size = new THREE.Vector3();
             box.getSize(size);
@@ -330,7 +334,7 @@ function setupEventListeners() {
         const key = e.key.toLowerCase();
         if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
         if (key === 'h') {
-          toggleAllVisibility();
+            toggleAllVisibility();
         } else if (key === 'g') {
             if (gridToggleBtn) gridToggleBtn.click();
         } else if (key === 's') {
@@ -397,7 +401,7 @@ function setupEventListeners() {
             const moveBase = 10;
             const scaleBase = 0.1;
             const currentMoveStep = moveBase * speedMultiplier;
-            const currentScaleStep = scaleBase * speedMultiplier * 0.1; 
+            const currentScaleStep = scaleBase * speedMultiplier * 0.1;
 
             let changed = false;
 
