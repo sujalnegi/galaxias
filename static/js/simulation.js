@@ -780,9 +780,13 @@ function animate() {
     }
     if (focusedPlanet) {
         const sunToPlanet = focusedPlanet.position.clone().normalize();
-        const scaledOffset = 100 * planetSizeMultiplier;
-        const targetPos = focusedPlanet.position.clone().add(sunToPlanet.multiplyScalar(scaledOffset)); // Orbit + 100
-        targetPos.y = 30;
+
+        const scaledOffset = 150 * planetSizeMultiplier;
+        const scaledHeight = 50 * planetSizeMultiplier;
+
+        const targetPos = focusedPlanet.position.clone().add(sunToPlanet.multiplyScalar(scaledOffset));
+        targetPos.y = scaledHeight;
+
         camera.position.lerp(targetPos, 0.05);
         camera.lookAt(0, 0, 0);
 
