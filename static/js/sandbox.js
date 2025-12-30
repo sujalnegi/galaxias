@@ -147,7 +147,7 @@ function setupEventListeners() {
             const file = e.target.files[0];
             if (file) {
                 const url = URL.createObjectURL(file);
-                const name = file.name.replace(/\.[^/.]+$/, ""); 
+                const name = file.name.replace(/\.[^/.]+$/, "");
                 loadCustomModel(url, name);
                 customModelInput.value = '';
             }
@@ -628,119 +628,122 @@ function setupEventListeners() {
         }
         movementFrameId = requestAnimationFrame(updateLoop);
     }
-}
-const historyStack = [];
-const redoStack = [];
-let currentTransformState = null;
 
-function recordAction(action) {
-    historyStack.push(action);
-    redoStack.length = 0; 
-    console.log('Action recorded:', action.type);
-}
+    const historyStack = [];
+    const redoStack = [];
+    let currentTransformState = null;
 
-function undo() {
-    if (historyStack.length === 0) return;
-    const action = historyStack.pop();
-    redoStack.push(action);
-
-    switch (action.type) {
-        case 'add':
-            scene.remove(action.object);
-            if (selectedObject === action.object) deselectObject();
-            break;
-        case 'delete':
-            scene.add(action.object);
-            selectObject(action.object);
-            break;
-        case 'transform':
-            if (action.object) {
-                action.object.position.copy(action.oldState.position);
-                action.object.scale.copy(action.oldState.scale);
-                if (selectionHelper) selectionHelper.update();
-                updatePropertiesPanel();
-            }
-            break;
+    function recordAction(action) {
+        historyStack.push(action);
+        redoStack.length = 0;
+        console.log('Action recorded:', action.type);
     }
-    console.log('Undo:', action.type);
-}
 
-function redo() {
-    if (redoStack.length === 0) return;
-    const action = redoStack.pop();
-    historyStack.push(action);
+    function undo() {
+        if (historyStack.length === 0) return;
+        const action = historyStack.pop();
+        redoStack.push(action);
 
-    switch (action.type) {
-        case 'add':
-            scene.add(action.object);
-            selectObject(action.object);
-            break;
-        case 'delete':
-            scene.remove(action.object);
-            if (selectedObject === action.object) deselectObject();
-            break;
-        case 'transform':
-            if (action.object) {
-                action.object.position.copy(action.newState.position);
-                action.object.scale.copy(action.newState.scale);
-                if (selectionHelper) selectionHelper.update();
-                updatePropertiesPanel();
-            }
-            break;
-    }
-    console.log('Redo:', action.type);
-}
-
-const undoBtn = document.getElementById('undoBtn');
-const redoBtn = document.getElementById('redoBtn');
-if (undoBtn) undoBtn.addEventListener('click', undo);
-if (redoBtn) redoBtn.addEventListener('click', redo);
-
-function stopMovementLoop() {
-    if (currentTransformState && selectedObject) {
-        const newPos = selectedObject.position.clone();
-        const newScale = selectedObject.scale.clone();
-
-        if (!newPos.equals(currentTransformState.position) || !newScale.equals(currentTransformState.scale)) {
-            recordAction({
-                type: 'transform',
-                object: selectedObject,
-                oldState: currentTransformState,
-                newState: {
-                    position: newPos,
-                    scale: newScale
+        switch (action.type) {
+            case 'add':
+                scene.remove(action.object);
+                if (selectedObject === action.object) deselectObject();
+                break;
+            case 'delete':
+                scene.add(action.object);
+                selectObject(action.object);
+                break;
+            case 'transform':
+                if (action.object) {
+                    action.object.position.copy(action.oldState.position);
+                    action.object.scale.copy(action.oldState.scale);
+                    if (selectionHelper) selectionHelper.update();
+                    updatePropertiesPanel();
                 }
-            });
+                break;
         }
-        currentTransformState = null;
+        console.log('Undo:', action.type);
     }
-    if (movementFrameId) {
-        cancelAnimationFrame(movementFrameId);
-        movementFrameId = null;
-    }
-}
-const propInputs = ['propX', 'propY', 'propZ', 'propScale', 'propScaleRange', 'propSpeedRange'];
-propInputs.forEach(id => {
-    const input = document.getElementById(id);
-    if (input) {
-        input.addEventListener('input', updateSelectedObjectProperties);
-    }
-});
 
-const deleteBtn = document.getElementById('deleteBtn');
-if (deleteBtn) {
-    deleteBtn.addEventListener('click', deleteSelectedObject);
-}
+    function redo() {
+        if (redoStack.length === 0) return;
+        const action = redoStack.pop();
+        historyStack.push(action);
 
-const globalSpeedRange = document.getElementById('globalSpeedRange');
-const globalSpeedValue = document.getElementById('globalSpeedValue');
-if (globalSpeedRange) {
-    globalSpeedRange.addEventListener('input', function () {
-        globalAnimationSpeed = parseFloat(this.value);
-        if (globalSpeedValue) globalSpeedValue.textContent = globalAnimationSpeed.toFixed(2);
+        switch (action.type) {
+            case 'add':
+                scene.add(action.object);
+                selectObject(action.object);
+                break;
+            case 'delete':
+                scene.remove(action.object);
+                if (selectedObject === action.object) deselectObject();
+                break;
+            case 'transform':
+                if (action.object) {
+                    action.object.position.copy(action.newState.position);
+                    action.object.scale.copy(action.newState.scale);
+                    if (selectionHelper) selectionHelper.update();
+                    updatePropertiesPanel();
+                }
+                break;
+        }
+        console.log('Redo:', action.type);
+    }
+
+    const undoBtn = document.getElementById('undoBtn');
+    const redoBtn = document.getElementById('redoBtn');
+    if (undoBtn) undoBtn.addEventListener('click', undo);
+    if (redoBtn) redoBtn.addEventListener('click', redo);
+
+    window.undo = undo;
+    window.redo = redo;
+
+    function stopMovementLoop() {
+        if (currentTransformState && selectedObject) {
+            const newPos = selectedObject.position.clone();
+            const newScale = selectedObject.scale.clone();
+
+            if (!newPos.equals(currentTransformState.position) || !newScale.equals(currentTransformState.scale)) {
+                recordAction({
+                    type: 'transform',
+                    object: selectedObject,
+                    oldState: currentTransformState,
+                    newState: {
+                        position: newPos,
+                        scale: newScale
+                    }
+                });
+            }
+            currentTransformState = null;
+        }
+        if (movementFrameId) {
+            cancelAnimationFrame(movementFrameId);
+            movementFrameId = null;
+        }
+    }
+    const propInputs = ['propX', 'propY', 'propZ', 'propScale', 'propScaleRange', 'propSpeedRange'];
+    propInputs.forEach(id => {
+        const input = document.getElementById(id);
+        if (input) {
+            input.addEventListener('input', updateSelectedObjectProperties);
+        }
     });
-}
 
+    const deleteBtn = document.getElementById('deleteBtn');
+    if (deleteBtn) {
+        deleteBtn.addEventListener('click', deleteSelectedObject);
+    }
+
+    const globalSpeedRange = document.getElementById('globalSpeedRange');
+    const globalSpeedValue = document.getElementById('globalSpeedValue');
+    if (globalSpeedRange) {
+        globalSpeedRange.addEventListener('input', function () {
+            globalAnimationSpeed = parseFloat(this.value);
+            if (globalSpeedValue) globalSpeedValue.textContent = globalAnimationSpeed.toFixed(2);
+        });
+    }
+}
 
 function onWindowResize() {
     camera.aspect = window.innerWidth / window.innerHeight;
