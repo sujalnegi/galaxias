@@ -89,6 +89,30 @@
                         style="width: 100px; height: 100px; object-fit: cover; object-position: center; margin-bottom: 10px; filter: invert(1);">
                     <span style="font-size: 1rem; color: rgba(255,255,255,0.7);">H: Hide UI</span>
                 </div>
+                <div class="control-visual-item"
+                    style="display: flex; flex-direction: column; align-items: center; text-align: center;">
+                    <img src="{{ url_for('static', filename='assets/dkey.png') }}" alt="Delete Control"
+                        style="width: 100px; height: 100px; object-fit: cover; object-position: center; margin-bottom: 10px; filter: invert(1);">
+                    <span style="font-size: 1rem; color: rgba(255,255,255,0.7);">D: Delete Object</span>
+                </div>
+                <div class="control-visual-item"
+                    style="display: flex; flex-direction: column; align-items: center; text-align: center;">
+                    <img src="{{ url_for('static', filename='assets/arrows.png') }}" alt="Move Control"
+                        style="width: 100px; height: 100px; object-fit: cover; object-position: center; margin-bottom: 10px; filter: invert(1);">
+                    <span style="font-size: 1rem; color: rgba(255,255,255,0.7);">Arrows: Move X/Z</span>
+                </div>
+                <div class="control-visual-item"
+                    style="display: flex; flex-direction: column; align-items: center; text-align: center;">
+                    <img src="{{ url_for('static', filename='assets/shift+arrow.png') }}" alt="Vertical Move Control"
+                        style="width: 100px; height: 100px; object-fit: cover; object-position: center; margin-bottom: 10px; filter: invert(1);">
+                    <span style="font-size: 1rem; color: rgba(255,255,255,0.7);">Shift+Arrow: Move Y</span>
+                </div>
+                <div class="control-visual-item"
+                    style="display: flex; flex-direction: column; align-items: center; text-align: center;">
+                    <img src="{{ url_for('static', filename='assets/ctrl+arrow.png') }}" alt="Scale Control"
+                        style="width: 100px; height: 100px; object-fit: cover; object-position: center; margin-bottom: 10px; filter: invert(1);">
+                    <span style="font-size: 1rem; color: rgba(255,255,255,0.7);">Ctrl+Arrow: Scale</span>
+                </div>
             </div>
         </div>
         <button class="panel-toggle top-toggle" id="topToggle">
