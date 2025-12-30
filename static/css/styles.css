@@ -468,7 +468,6 @@ body {
     box-shadow: 0 10px 30px rgba(255, 255, 255, 0.3);
     animation: popupSlideIn 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
     position: relative;
-    overflow: hidden;
 }
 
 
@@ -671,4 +670,57 @@ body {
 
 .github-footer a:hover::after {
     width: 100%;
+}
+
+.gpu-floating-img {
+    position: absolute;
+    width: 180px;
+    height: auto;
+    z-index: 20;
+    pointer-events: none;
+    filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.5));
+}
+
+.left-gpu {
+    top: 50%;
+    left: -140px;
+    transform: translateY(-50%) rotate(-15deg);
+    animation: floatLeft 4s ease-in-out infinite;
+}
+
+.right-gpu {
+    top: 40%;
+    right: -140px;
+    transform: translateY(-50%) rotate(15deg);
+    animation: floatRight 4.5s ease-in-out infinite;
+}
+
+@keyframes floatLeft {
+
+    0%,
+    100% {
+        transform: translateY(-50%) rotate(-15deg) translateY(0);
+    }
+
+    50% {
+        transform: translateY(-50%) rotate(-15deg) translateY(-20px);
+    }
+}
+
+@keyframes floatRight {
+
+    0%,
+    100% {
+        transform: translateY(-50%) rotate(15deg) translateY(0);
+    }
+
+    50% {
+        transform: translateY(-50%) rotate(15deg) translateY(-25px);
+    }
+}
+
+@media (max-width: 1000px) {
+    .gpu-floating-img {
+        display: none;
+    }
 }

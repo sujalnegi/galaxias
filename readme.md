@@ -103,6 +103,6 @@ You should see **Galaxias** running
 
 ## Acknowledgments/Credits
 
-- Satellite TLE data from CelesTrak
 - 3D models from NASA and sketchers from sketchlab
 - Three.js community 
+- Satelite Monitor repo from github

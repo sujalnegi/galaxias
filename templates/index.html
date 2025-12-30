@@ -17,6 +17,8 @@
 <body>
     <div class="gpu-warning-overlay" id="gpuWarning">
         <div class="gpu-warning-popup">
+            <img src="{{ url_for('static', filename='assets/gpu.png') }}" class="gpu-floating-img left-gpu" alt="GPU">
+            <img src="{{ url_for('static', filename='assets/gpu.png') }}" class="gpu-floating-img right-gpu" alt="GPU">
             <div class="warning-icon">⚠</div>
             <h2 class="warning-title">High GPU Usage Warning</h2>
             <div class="warning-content">
