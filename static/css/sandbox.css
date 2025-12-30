@@ -55,7 +55,7 @@ body {
     border: 2px solid rgba(255, 255, 255, 0.3);
     border-radius: 8px;
     color: #fff;
-    font-family: 'Korvich', sans-serif;
+    font-family: 'Saira', sans-serif;
     font-size: 0.9rem;
     font-weight: 600;
     cursor: pointer;
@@ -94,7 +94,7 @@ body {
 }
 
 .menu-title {
-    font-family: 'Shabo', sans-serif;
+    font-family: 'Orbitron', sans-serif;
     font-size: 1.2rem;
     margin-bottom: 12px;
     color: #FFD700;
@@ -148,7 +148,7 @@ body {
 }
 
 .right-sidebar h3 {
-    font-family: 'Shabo', sans-serif;
+    font-family: 'Orbitron', sans-serif;
     font-size: 1.2rem;
     margin-bottom: 15px;
     color: #FFD700;
@@ -418,6 +418,7 @@ body {
 
 .styled-input[type=number] {
     -moz-appearance: textfield;
+    appearance: textfield;
 }
 
 .scale-control {
@@ -429,6 +430,7 @@ body {
 .styled-range {
     flex: 1;
     -webkit-appearance: none;
+    appearance: none;
     height: 4px;
     background: rgba(255, 255, 255, 0.2);
     border-radius: 2px;

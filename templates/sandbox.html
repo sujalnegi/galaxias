@@ -10,7 +10,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
-        href="https://fonts.googleapis.com/css2?family=Shabo:wght@400;700;900&family=Korvich:wght@400;700&family=Press+Start+2P&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Saira:wght@400;700&family=Press+Start+2P&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
@@ -64,6 +64,30 @@
                     <img src="{{ url_for('static', filename='assets/space.png') }}" alt="Pause Control"
                         style="width: 100px; height: 100px; object-fit: cover; object-position: center; margin-bottom: 10px; filter: invert(1);">
                     <span style="font-size: 1rem; color: rgba(255,255,255,0.7);">Space: Pause</span>
+                </div>
+                <div class="control-visual-item"
+                    style="display: flex; flex-direction: column; align-items: center; text-align: center;">
+                    <img src="{{ url_for('static', filename='assets/xkey.png') }}" alt="Recentre Control"
+                        style="width: 100px; height: 100px; object-fit: cover; object-position: center; margin-bottom: 10px; filter: invert(1);">
+                    <span style="font-size: 1rem; color: rgba(255,255,255,0.7);">X: Recentre</span>
+                </div>
+                <div class="control-visual-item"
+                    style="display: flex; flex-direction: column; align-items: center; text-align: center;">
+                    <img src="{{ url_for('static', filename='assets/gkey.png') }}" alt="Grid Control"
+                        style="width: 100px; height: 100px; object-fit: cover; object-position: center; margin-bottom: 10px; filter: invert(1);">
+                    <span style="font-size: 1rem; color: rgba(255,255,255,0.7);">G: Toggle Grid</span>
+                </div>
+                <div class="control-visual-item"
+                    style="display: flex; flex-direction: column; align-items: center; text-align: center;">
+                    <img src="{{ url_for('static', filename='assets/skey.png') }}" alt="Stars Control"
+                        style="width: 100px; height: 100px; object-fit: cover; object-position: center; margin-bottom: 10px; filter: invert(1);">
+                    <span style="font-size: 1rem; color: rgba(255,255,255,0.7);">S: Toggle Stars</span>
+                </div>
+                <div class="control-visual-item"
+                    style="display: flex; flex-direction: column; align-items: center; text-align: center;">
+                    <img src="{{ url_for('static', filename='assets/hkey.png') }}" alt="Hide UI Control"
+                        style="width: 100px; height: 100px; object-fit: cover; object-position: center; margin-bottom: 10px; filter: invert(1);">
+                    <span style="font-size: 1rem; color: rgba(255,255,255,0.7);">H: Hide UI</span>
                 </div>
             </div>
         </div>
