@@ -30,7 +30,9 @@
 
 ## Demo Video & Hosted Links
 
-* Demo video is [here]()
+* Demo video is [here](https://drive.google.com/file/d/1hDwPmPVVhFQY3QD9q7nIaNym_Wc5gYZm/view?usp=drive_link)
+
+**NOTE**: Long but thorough. I also made a mini simulation in the sandbox mode.
 
 * Hosted link is [here](https://galaxias.onrender.com/)
 
