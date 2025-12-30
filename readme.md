@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="galaxias_title.svg" alt="Galaxias Logo" width="300"/>
+  <img src="static/images/galaxias_title.svg" alt="Galaxias Logo" width="300"/>
 
 ---
  
