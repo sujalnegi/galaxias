@@ -723,14 +723,16 @@ body {
 }
 
 .modal-btn.confirm {
-    background: linear-gradient(135deg, #FF9F43, #FF6B6B);
-    color: #fff;
-    box-shadow: 0 4px 15px rgba(255, 159, 67, 0.3);
+    background: transparent;
+    border: 2px solid #FF9F43;
+    color: #FF9F43;
+    box-shadow: 0 0 10px rgba(255, 159, 67, 0.2);
 }
 
 .modal-btn.confirm:hover {
+    background: rgba(255, 159, 67, 0.1);
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(255, 159, 67, 0.4);
+    box-shadow: 0 0 15px rgba(255, 159, 67, 0.4);
 }
 
 .top-sidebar {

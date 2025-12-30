@@ -32,7 +32,9 @@
 
 * Demo video is [here]()
 
-* Hosted link is [here]()
+* Hosted link is [here](https://galaxias.onrender.com/)
+
+**NOTE**: the site is hosted on Render's free tier subscription so it might take upto 5 mins to start up. I am sorry for the inconvinience :|
 
 ## Technologies Used
 
