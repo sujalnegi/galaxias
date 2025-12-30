@@ -1,0 +1,27 @@
+<svg width="440" height="100" viewBox="0 0 440 100" xmlns="http://www.w3.org/2000/svg">
+    <g fill="none" stroke="#ccc0c0" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" transform="translate(-10, 10)">
+        <!-- G -->
+        <path d="M 50,20 L 20,20 L 20,70 L 50,70 L 50,45 L 35,45" />
+        
+        <!-- A -->
+        <path d="M 70,70 L 95,20 L 120,70" />
+        
+        <!-- L -->
+        <path d="M 140,20 L 140,70 L 170,70" />
+        
+        <!-- A -->
+        <path d="M 190,70 L 215,20 L 240,70" />
+        
+        <!-- X -->
+        <path d="M 260,20 L 300,70 M 300,20 L 260,70" />
+        
+        <!-- I -->
+        <path d="M 320,20 L 320,70" />
+        
+        <!-- A -->
+        <path d="M 340,70 L 365,20 L 390,70" />
+        
+        <!-- S -->
+        <path d="M 440,20 L 410,20 L 410,45 L 440,45 L 440,70 L 410,70" />
+    </g>
+</svg>

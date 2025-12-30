@@ -807,3 +807,15 @@ body {
     margin-bottom: 0;
     text-align: center;
 }
+
+#customModelBtn {
+    background: transparent !important;
+    border: 1px solid #ff9f43 !important;
+    transition: none;
+}
+
+#customModelBtn:hover {
+    transform: none;
+    background: transparent !important;
+    border: 1px solid #ff9f43 !important;
+}

@@ -135,80 +135,117 @@ function setupEventListeners() {
             updateStarContrast(color);
         });
     });
+    const customModelBtn = document.getElementById('customModelBtn');
+    const customModelInput = document.getElementById('customModelInput');
+
+    if (customModelBtn && customModelInput) {
+        customModelBtn.addEventListener('click', () => {
+            customModelInput.click();
+        });
+
+        customModelInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const url = URL.createObjectURL(file);
+                const name = file.name.replace(/\.[^/.]+$/, ""); 
+                loadCustomModel(url, name);
+                customModelInput.value = '';
+            }
+        });
+    }
+
+    function setupModel(gltf, name) {
+        const rawModel = gltf.scene;
+
+        const box = new THREE.Box3().setFromObject(rawModel);
+        const center = box.getCenter(new THREE.Vector3());
+        const size = box.getSize(new THREE.Vector3());
+
+        rawModel.position.x -= center.x;
+        rawModel.position.y -= center.y;
+        rawModel.position.z -= center.z;
+
+        const modelWrapper = new THREE.Group();
+        modelWrapper.add(rawModel);
+        const maxDim = Math.max(size.x, size.y, size.z);
+        const targetSize = 500;
+        if (maxDim > 0) {
+            const scaleFactor = targetSize / maxDim;
+            modelWrapper.scale.set(scaleFactor, scaleFactor, scaleFactor);
+        }
+
+        const dimX = size.x * modelWrapper.scale.x;
+        const dimZ = size.z * modelWrapper.scale.z;
+        const radius = Math.max(dimX, dimZ) / 2;
+
+        modelWrapper.userData.name = name;
+        modelWrapper.userData.isSelectable = true;
+        modelWrapper.userData.originalScale = modelWrapper.scale.clone();
+        modelWrapper.userData.radius = radius;
+        modelWrapper.userData.isSpinning = false;
+        modelWrapper.userData.isOrbiting = false;
+        modelWrapper.userData.animationSpeed = 1.0;
+
+        const positionOffset = 3000;
+        let validPosition = false;
+        let attempts = 0;
+        const maxAttempts = 100;
+        let finalX = 0, finalZ = 0;
+
+        while (!validPosition && attempts < maxAttempts) {
+            const x = (Math.random() - 0.5) * positionOffset;
+            const z = (Math.random() - 0.5) * positionOffset;
+
+            validPosition = true;
+            scene.children.forEach(child => {
+                if (child.userData.isSelectable && child !== modelWrapper) {
+                    const dist = Math.sqrt(Math.pow(child.position.x - x, 2) + Math.pow(child.position.z - z, 2));
+                    const minDistance = radius + (child.userData.radius || 0) + 50;
+                    if (dist < minDistance) {
+                        validPosition = false;
+                    }
+                }
+            });
+
+            if (validPosition) {
+                finalX = x;
+                finalZ = z;
+            }
+            attempts++;
+        }
+
+        modelWrapper.position.set(finalX, 0, finalZ);
+        scene.add(modelWrapper);
+        console.log(`Loaded ${name} at`, modelWrapper.position);
+
+        recordAction({
+            type: 'add',
+            object: modelWrapper
+        });
+
+        selectObject(modelWrapper);
+    }
+
     function loadModel(name) {
         const loader = new THREE.GLTFLoader();
         const fileName = name.toLowerCase().replace(' ', '_');
 
-
         loader.load(`/static/assets/${fileName}.glb`, function (gltf) {
-            const rawModel = gltf.scene;
-
-            const box = new THREE.Box3().setFromObject(rawModel);
-            const center = box.getCenter(new THREE.Vector3());
-            const size = box.getSize(new THREE.Vector3());
-
-            rawModel.position.x -= center.x;
-            rawModel.position.y -= center.y;
-            rawModel.position.z -= center.z;
-
-            const modelWrapper = new THREE.Group();
-            modelWrapper.add(rawModel);
-            const maxDim = Math.max(size.x, size.y, size.z);
-            const targetSize = 500;
-            if (maxDim > 0) {
-                const scaleFactor = targetSize / maxDim;
-                modelWrapper.scale.set(scaleFactor, scaleFactor, scaleFactor);
-            }
-
-            const dimX = size.x * modelWrapper.scale.x;
-            const dimZ = size.z * modelWrapper.scale.z;
-            const radius = Math.max(dimX, dimZ) / 2;
-
-            modelWrapper.userData.name = name;
-            modelWrapper.userData.isSelectable = true;
-            modelWrapper.userData.originalScale = modelWrapper.scale.clone();
-            modelWrapper.userData.radius = radius;
-            modelWrapper.userData.isSpinning = false;
-            modelWrapper.userData.isSpinning = false;
-            modelWrapper.userData.isOrbiting = false;
-            modelWrapper.userData.animationSpeed = 1.0;
-
-            const positionOffset = 3000;
-            let validPosition = false;
-            let attempts = 0;
-            const maxAttempts = 100;
-            let finalX = 0, finalZ = 0;
-
-            while (!validPosition && attempts < maxAttempts) {
-                const x = (Math.random() - 0.5) * positionOffset;
-                const z = (Math.random() - 0.5) * positionOffset;
-
-                validPosition = true;
-                scene.children.forEach(child => {
-                    if (child.userData.isSelectable && child !== modelWrapper) {
-                        const dist = Math.sqrt(Math.pow(child.position.x - x, 2) + Math.pow(child.position.z - z, 2));
-                        const minDistance = radius + (child.userData.radius || 0) + 50;
-                        if (dist < minDistance) {
-                            validPosition = false;
-                        }
-                    }
-                });
-
-                if (validPosition) {
-                    finalX = x;
-                    finalZ = z;
-                }
-                attempts++;
-            }
-
-            modelWrapper.position.set(finalX, 0, finalZ);
-            scene.add(modelWrapper);
-            console.log(`Loaded ${name} at`, modelWrapper.position);
-            selectObject(modelWrapper);
-
+            setupModel(gltf, name);
         }, undefined, function (error) {
             console.error('An error occurred loading the model:', error);
             alert(`Could not load ${name} model.`);
+        });
+    }
+
+    function loadCustomModel(url, name) {
+        const loader = new THREE.GLTFLoader();
+        loader.load(url, function (gltf) {
+            setupModel(gltf, name);
+            URL.revokeObjectURL(url);
+        }, undefined, function (error) {
+            console.error('An error occurred loading the custom model:', error);
+            alert(`Could not load custom model.`);
         });
     }
 
@@ -489,8 +526,22 @@ function setupEventListeners() {
             activeKeys.add(key);
             if (activeKeys.size === 1) {
                 keyHoldStartTime = performance.now();
+                if (selectedObject) {
+                    currentTransformState = {
+                        position: selectedObject.position.clone(),
+                        scale: selectedObject.scale.clone()
+                    };
+                }
                 startMovementLoop(e.ctrlKey, e.shiftKey);
             }
+        }
+
+        if ((e.ctrlKey || e.metaKey) && key === 'z') {
+            e.preventDefault();
+            undo();
+        } else if ((e.ctrlKey || e.metaKey) && key === 'y') {
+            e.preventDefault();
+            redo();
         }
     });
     window.addEventListener('keyup', (e) => {
@@ -577,35 +628,120 @@ function setupEventListeners() {
         }
         movementFrameId = requestAnimationFrame(updateLoop);
     }
-    function stopMovementLoop() {
-        if (movementFrameId) {
-            cancelAnimationFrame(movementFrameId);
-            movementFrameId = null;
-        }
-    }
-    const propInputs = ['propX', 'propY', 'propZ', 'propScale', 'propScaleRange', 'propSpeedRange'];
-    propInputs.forEach(id => {
-        const input = document.getElementById(id);
-        if (input) {
-            input.addEventListener('input', updateSelectedObjectProperties);
-        }
-    });
-
-    const deleteBtn = document.getElementById('deleteBtn');
-    if (deleteBtn) {
-        deleteBtn.addEventListener('click', deleteSelectedObject);
-    }
-
-    const globalSpeedRange = document.getElementById('globalSpeedRange');
-    const globalSpeedValue = document.getElementById('globalSpeedValue');
-    if (globalSpeedRange) {
-        globalSpeedRange.addEventListener('input', function () {
-            globalAnimationSpeed = parseFloat(this.value);
-            if (globalSpeedValue) globalSpeedValue.textContent = globalAnimationSpeed.toFixed(2);
-        });
-    }
-
 }
+const historyStack = [];
+const redoStack = [];
+let currentTransformState = null;
+
+function recordAction(action) {
+    historyStack.push(action);
+    redoStack.length = 0; 
+    console.log('Action recorded:', action.type);
+}
+
+function undo() {
+    if (historyStack.length === 0) return;
+    const action = historyStack.pop();
+    redoStack.push(action);
+
+    switch (action.type) {
+        case 'add':
+            scene.remove(action.object);
+            if (selectedObject === action.object) deselectObject();
+            break;
+        case 'delete':
+            scene.add(action.object);
+            selectObject(action.object);
+            break;
+        case 'transform':
+            if (action.object) {
+                action.object.position.copy(action.oldState.position);
+                action.object.scale.copy(action.oldState.scale);
+                if (selectionHelper) selectionHelper.update();
+                updatePropertiesPanel();
+            }
+            break;
+    }
+    console.log('Undo:', action.type);
+}
+
+function redo() {
+    if (redoStack.length === 0) return;
+    const action = redoStack.pop();
+    historyStack.push(action);
+
+    switch (action.type) {
+        case 'add':
+            scene.add(action.object);
+            selectObject(action.object);
+            break;
+        case 'delete':
+            scene.remove(action.object);
+            if (selectedObject === action.object) deselectObject();
+            break;
+        case 'transform':
+            if (action.object) {
+                action.object.position.copy(action.newState.position);
+                action.object.scale.copy(action.newState.scale);
+                if (selectionHelper) selectionHelper.update();
+                updatePropertiesPanel();
+            }
+            break;
+    }
+    console.log('Redo:', action.type);
+}
+
+const undoBtn = document.getElementById('undoBtn');
+const redoBtn = document.getElementById('redoBtn');
+if (undoBtn) undoBtn.addEventListener('click', undo);
+if (redoBtn) redoBtn.addEventListener('click', redo);
+
+function stopMovementLoop() {
+    if (currentTransformState && selectedObject) {
+        const newPos = selectedObject.position.clone();
+        const newScale = selectedObject.scale.clone();
+
+        if (!newPos.equals(currentTransformState.position) || !newScale.equals(currentTransformState.scale)) {
+            recordAction({
+                type: 'transform',
+                object: selectedObject,
+                oldState: currentTransformState,
+                newState: {
+                    position: newPos,
+                    scale: newScale
+                }
+            });
+        }
+        currentTransformState = null;
+    }
+    if (movementFrameId) {
+        cancelAnimationFrame(movementFrameId);
+        movementFrameId = null;
+    }
+}
+const propInputs = ['propX', 'propY', 'propZ', 'propScale', 'propScaleRange', 'propSpeedRange'];
+propInputs.forEach(id => {
+    const input = document.getElementById(id);
+    if (input) {
+        input.addEventListener('input', updateSelectedObjectProperties);
+    }
+});
+
+const deleteBtn = document.getElementById('deleteBtn');
+if (deleteBtn) {
+    deleteBtn.addEventListener('click', deleteSelectedObject);
+}
+
+const globalSpeedRange = document.getElementById('globalSpeedRange');
+const globalSpeedValue = document.getElementById('globalSpeedValue');
+if (globalSpeedRange) {
+    globalSpeedRange.addEventListener('input', function () {
+        globalAnimationSpeed = parseFloat(this.value);
+        if (globalSpeedValue) globalSpeedValue.textContent = globalAnimationSpeed.toFixed(2);
+    });
+}
+
+
 function onWindowResize() {
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
@@ -720,6 +856,11 @@ function updateSelectedObjectProperties() {
 
 function deleteSelectedObject() {
     if (!selectedObject) return;
+
+    recordAction({
+        type: 'delete',
+        object: selectedObject
+    });
 
     scene.remove(selectedObject);
     deselectObject();

@@ -138,6 +138,15 @@
                 </div>
             </div>
             <div class="menu-section">
+                <h3 class="menu-title">Custom</h3>
+                <div class="menu-items">
+                    <button class="menu-item" id="customModelBtn">
+                        <i class="fas fa-upload" style="margin-right: 8px;"></i> Upload .GLB
+                    </button>
+                    <input type="file" id="customModelInput" accept=".glb,.gltf" style="display: none;">
+                </div>
+            </div>
+            <div class="menu-section">
                 <h3 class="menu-title">Stars</h3>
                 <div class="menu-items">
                     <button class="menu-item" data-type="star" data-name="Sun">Sun</button>
@@ -200,6 +209,14 @@
                     <button class="icon-toggle-btn" id="orbitAllBtn" title="Orbit All Objects">
                         <span class="material-icons">public</span>
                         <span>Orbit All</span>
+                    </button>
+                    <button class="icon-toggle-btn" id="undoBtn" title="Undo Last Action (Ctrl+Z)">
+                        <span class="material-icons">undo</span>
+                        <span>Undo</span>
+                    </button>
+                    <button class="icon-toggle-btn" id="redoBtn" title="Redo Last Action (Ctrl+Y)">
+                        <span class="material-icons">redo</span>
+                        <span>Redo</span>
                     </button>
                 </div>
 
